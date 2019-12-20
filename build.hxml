@@ -1,15 +1,28 @@
--lib hxquicksettings
--lib thx.color
--lib hxColorToolkit
--lib msignal
--lib mloader
--lib uglifyjs
+# -lib hxquicksettings
+# -lib thx.color
+# -lib hxColorToolkit
+# -lib msignal
+# -lib mloader
+# -lib uglifyjs
 -cp src
 -main Main
 -js docs/cc_example.js
 -D source-map-content
 -D state=debug
 -debug
+-dce full
 # -dce full
 # -dce no
 
+
+--next
+
+
+-cp src
+# -main Main
+-js docs/GoSVG.js
+-dce full
+# -D source-map-content
+# -D state=debug
+# -debug
+cc.lets.GoSVG

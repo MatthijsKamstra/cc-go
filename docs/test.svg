@@ -1,0 +1,12 @@
+<svg data-name="Layer 1" 
+	xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+	<circle cx="94.37" cy="81.84" r="24.76" fill="#ec1e24" stroke="#231f20" stroke-miterlimit="10"/>
+	<circle cx="370.66" cy="81.84" r="24.76" fill="#3853a3" stroke="#231f20" stroke-miterlimit="10"/>
+	<circle cx="204.8" cy="236.88" r="24.76" fill="#77c384" stroke="#231f20" stroke-miterlimit="10"/>
+	<circle cx="418.86" cy="334.65" r="24.76" fill="#f7ec37" stroke="#231f20" stroke-miterlimit="10"/>
+	<circle cx="180.04" cy="433.69" r="24.76" fill="#b8529e" stroke="#231f20" stroke-miterlimit="10"/>
+	<path fill="#ec1e24" stroke="#231f20" stroke-miterlimit="10" d="M37.03 174.36h57.34v57.34H37.03z"/>
+	<path fill="#77c384" stroke="#231f20" stroke-miterlimit="10" d="M408.43 174.36h117.28v28.67H408.43z"/>
+	<path fill="#f7ec37" stroke="#231f20" stroke-miterlimit="10" d="M418.86 433.69h106.86v78.19H418.86z"/>
+	<path fill="#b8529e" stroke="#231f20" stroke-miterlimit="10" d="M46.15 350.29h36.49v122.5H46.15z"/>
+</svg>

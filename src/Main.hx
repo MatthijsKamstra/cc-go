@@ -1,70 +1,68 @@
 package;
 
+import js.Syntax;
+import js.html.svg.Element;
 import js.Browser.*;
-import js.Browser;
-import js.html.*;
-
 import model.constants.App;
 
 /**
  * @author Matthijs Kamstra aka [mck]
  * MIT
- * 
+ *
  */
 class Main {
-	
-	var container : js.html.DivElement;
-
-	public function new () {
-		trace( "Hello 'Example Javascript'" );
+	public function new() {
+		init();
 	}
-	
+
 	function init() {
 		document.addEventListener("DOMContentLoaded", function(event) {
-			console.log('${App.NAME} Dom ready :: build: ${App.BUILD} ');
+			console.log('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 
-			// var container = document.getElementById("prop");
-			// container.innerHTML = 'html';
+			// search for element in svg
+			var svgCircle:Element = cast document.getElementById('circle-1');
+			svgCircle.setAttributeNS(null, 'cx', '111');
+			svgCircle.setAttribute('cy', '111');
 
-			initHTML();
-			loadData();
+			Syntax.code('GoSVG.to({0}, {1}).x({2}).y({3})', svgCircle, 5, 500, 100);
+
+			// console.log('${svgCircle}');
+
+			var svgRect:Element = cast document.getElementById('rect-1');
+			// console.log('${svgRect}');
+
+			// Syntax.code('GoSVG.test({0}, {1})', svgCircle, 2.4);
+			Syntax.code('GoSVG.to({0}, {1}).x({2}).y({3})', svgRect, 10, 500, 555);
+
+			// var _svgRect:js.html.svg.RectElement = cast document.getElementById('rect-1');
+			// _svgRect.setAttributeNS(null, 'x', '100');
+			// _svgRect.setAttribute('y', '100');
+
+			// console.log('${_svgRect.x}');
+			// trace(Reflect.field(_svgRect, 'y'));
+
+			var svgs = document.getElementsByTagName('svg');
+			trace(svgs.length);
+
+			var svg = document.getElementsByTagName('svg')[0];
+			var children = (svg.children);
+			for (i in children) {
+				var child = i;
+				// console.log(i.tagName);
+			}
+
+			// var els = svg.get
+
+			Syntax.code('GoSVG.to({0}, {1}).x({2}).y({3})', document.getElementById('line-1'), 5, 500, 100);
+
+			var _svgPolyLine:Element = cast document.getElementById('polyline-1');
+			_svgPolyLine.setAttribute('transform', 'translate(333)');
+
+			trace(_svgPolyLine);
 		});
 	}
 
-	function initHTML () {
-		container = document.createDivElement();
-		container.id = "example_javascript";
-		container.className = "container";
-		document.body.appendChild(container);
-
-		var h1 = document.createElement('h1');
-		h1.innerText = "Example Javascript";
-		container.appendChild(h1);
-	}
-
-	function loadData(){
-		var url = 'http://ip.jsontest.com/';
-		var req = new haxe.Http(url);
-		// req.setHeader('Content-Type', 'application/json');
-		// req.setHeader('auth', '${App.TOKEN}');
-		req.onData = function (data : String) {
-			try {
-				var json = haxe.Json.parse(data);
-				trace (json);
-			} catch (e:Dynamic){
-				trace(e);
-			}
-		}
-		req.onError = function (error : String) {
-			trace('error: $error');
-		}
-		req.onStatus = function (status : Int) {
-			trace('status: $status');
-		}
-		req.request(true);  // false=GET, true=POST
-	}
-
-	static public function main () {
-		var app = new Main ();
+	static public function main() {
+		var app = new Main();
 	}
 }
