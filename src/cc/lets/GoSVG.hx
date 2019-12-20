@@ -8,7 +8,7 @@ import js.Browser.*;
 
 /**
  * version
- * 		2.0.0 - Start with GoSVG
+ * 		2.0.0 - Start with GoSVG/ removing timebased stuff
  * 		1.1.0 - 3D additions (z-dir)
  * 		1.0.9 - Haxe 4 update
  * 		1.0.8 - arc
@@ -18,10 +18,9 @@ import js.Browser.*;
 @:expose
 @:native("GoSVG")
 class GoSVG {
-	// private static var _trigger:Timer;
-	// private static var _trigger:Int; // requestAnimationFrame
 	private static var _requestId:Int; // requestAnimationFrame
 	private static var _tweens:Array<GoSVG> = new Array<GoSVG>();
+	public static var _counter = 0;
 
 	private var _id:String;
 	private var _target:js.html.svg.Element;
@@ -33,8 +32,6 @@ class GoSVG {
 	private var _isFrom:Bool = false;
 	private var _isYoyo:Bool = false;
 	private var _isWiggle:Bool = false;
-	// private var _isOrbit:Bool = false;
-	private var _isTimeBased:Bool = false; // default is frameBased
 	private var _isDelayDone:Bool = false; // default is frameBased
 	private var _initTime:Int = 0; // should work with time (miliseconds) and frames (FPS)
 	private var _delay:Int = 0;
@@ -43,8 +40,8 @@ class GoSVG {
 	private var FRAME_RATE:Int = 60; // 60 frames per second (FPS)
 	private var DEBUG:Bool = true;
 	private var VERSION:String = '2.0.0';
-
-	public static var _counter = 0;
+	// var names
+	private var TRANSFORM = 'transform';
 
 	/**
 	 * Animate an object to another state (like position, scale, rotation, alpha)
@@ -61,12 +58,7 @@ class GoSVG {
 		this._seconds = duration;
 		this._target = target;
 		this._duration = getDuration(duration);
-		// this._options = cast{};
-		if (_isTimeBased) {
-			this._initTime = getTimer();
-		} else {
-			this._initTime = this._duration;
-		}
+		this._initTime = this._duration;
 		_tweens.push(this);
 		if (DEBUG)
 			console.log('New GoSVG - _id: "$_id" / _duration: '
@@ -76,9 +68,7 @@ class GoSVG {
 				+ ' / _tweens.length: '
 				+ _tweens.length);
 		// [mck] extreme little delay to make sure all the values are set
-		// init();
 		haxe.Timer.delay(init, 1); // 1 milisecond delay
-
 		// [mck] TODO check if there is a tween attached to the same animation?
 	}
 
@@ -194,46 +184,6 @@ class GoSVG {
 		return _go;
 	}
 
-	// static inline public function orbit(target:Dynamic, x:Float, y:Float, radius:Int, speed:Float):GoSVG {
-	// 	var _go = new GoSVG(target, 1 + (Math.random()));
-	// 	_go._isOrbit = true;
-	// 	_go.prop('x', x);
-	// 	_go.prop('y', y);
-	// 	_go.prop('cx', x);
-	// 	_go.prop('cy', y);
-	// 	_go.prop('radius', radius);
-	// 	_go.prop('speed', speed);
-	// 	_go.prop('angle', speed);
-	// 	Reflect.setField(target, 'cx', x);
-	// 	Reflect.setField(target, 'cy', y);
-	// 	Reflect.setField(target, 'angle', 0);
-	// 	Reflect.setField(target, 'speed', speed);
-	// 	Reflect.setField(target, 'radius', radius);
-	// 	// _go.prop('x', x + (Math.random() * (max - min)) + min);
-	// 	// _go.prop('y', y + (Math.random() * (max - min)) + min);
-	// 	// _go.ease(cc.lets.easing.Sine.easeInOut);
-	// 	// _go.onComplete(function() {
-	// 	// 	Go.wiggle(target, x, y, wiggleRoom);
-	// 	// });
-	// 	return _go;
-	// }
-
-	/**
-	 * default the animation is framebased (`requestAnimationFrame`) and will stop animating when focus is gone
-	 * but perhaps time is important
-	 *
-	 * @example		Go.from(foobarMc, 1.5).isTimeBased();
-	 *
-	 * @param  isTimeBased  (optional)
-	 * @return Go
-	 */
-	inline public function isTimeBased(?isTimeBased:Bool = true):GoSVG {
-		console.warn('Fixme: this doesn\t work right now');
-		_isTimeBased = isTimeBased;
-		_duration = Std.int(_duration / FRAME_RATE);
-		return this;
-	}
-
 	// ____________________________________ properties ____________________________________
 
 	/**
@@ -328,10 +278,10 @@ class GoSVG {
 	 * @return       Go
 	 */
 	inline public function pos(x:Float, y:Float, ?z:Float):GoSVG {
-		prop('x', x);
-		prop('y', y);
+		this.x(x);
+		this.y(y);
 		if (z != null)
-			prop('z', z);
+			this.z(z);
 		return this;
 	}
 
@@ -517,18 +467,10 @@ class GoSVG {
 
 	// ____________________________________ private ____________________________________
 	private function init():Void {
-		if (_isTimeBased) {
-			// [mck] TODO clean this up!!!!
-			console.log('TODO: build timebased animation');
-			// var framerate:Int = Math.round(FRAME_RATE / 2); //30;
-			// _trigger = (_trigger == null) ? new Timer(Std.int(1000 / framerate)) : _trigger;
-			// _trigger.run = onEnterFrameHandler;
-		} else {
-			if (_requestId == null) {
-				console.info('start frame animation');
-				_requestId = window.requestAnimationFrame(onEnterFrameHandler);
-				// trace(_requestId);
-			}
+		if (_requestId == null) {
+			console.info('start frame animation');
+			_requestId = window.requestAnimationFrame(onEnterFrameHandler);
+			// trace(_requestId);
 		}
 	}
 
@@ -536,14 +478,9 @@ class GoSVG {
 		// if (_initTime == 0) return;
 		if (_tweens.length <= 0) {
 			// [mck] stop timer, we are done!
-			if (_isTimeBased) {
-				// _trigger.stop();
-				// _trigger.run = null;
-			} else {
-				console.info('kill _requestId: $_requestId');
-				window.cancelAnimationFrame(_requestId);
-				return;
-			}
+			console.info('kill _requestId: $_requestId');
+			window.cancelAnimationFrame(_requestId);
+			return;
 		} else
 			for (i in 0..._tweens.length) {
 				// [mck] FIXME :: don't know exactly why I need to check if _tweens[i] != null, but I do.
@@ -556,9 +493,7 @@ class GoSVG {
 
 	private function update():Void {
 		// [mck] check for delay, simply count down the delay before we animate
-		// [mck] TODO doesn't work with time
-		if (_delay > 0 && _isTimeBased)
-			console.warn('FIXME this doesn\'t work yet');
+
 		if (_delay > 0) {
 			_delay--;
 			return;
@@ -576,9 +511,7 @@ class GoSVG {
 
 		this._initTime--;
 		var progressed = (this._duration - this._initTime);
-		if (_isTimeBased) {
-			progressed = getTimer() - _initTime;
-		}
+
 		// trace ('$progressed >= $_duration');
 		if (progressed >= this._duration) {
 			// [mck] setProperties in the final state
@@ -606,14 +539,25 @@ class GoSVG {
 			// svg changes
 			switch (n) {
 				case 'transform-x':
-					_target.setAttribute('transform', 'translate( ${_easing.ease(time, range.from, (range.to - range.from), _duration)} )');
+					var ypos = getTransform(_target).y;
+					_target.setAttribute(TRANSFORM, 'translate(${_easing.ease(time, range.from, (range.to - range.from), _duration)}, $ypos)');
 				case 'transform-y':
-					_target.setAttribute('transform', 'translate(0, ${_easing.ease(time, range.from, (range.to - range.from), _duration)} )');
+					var xpos = getTransform(_target).y;
+					_target.setAttribute(TRANSFORM, 'translate($xpos, ${_easing.ease(time, range.from, (range.to - range.from), _duration)} )');
 				default:
 					_target.setAttribute(n, '${_easing.ease(time, range.from, (range.to - range.from), _duration)}');
 			}
 		}
 		// else throw( "Property "+propertyName+" not found in target!" );
+	}
+
+	private function getTransform(t:js.html.svg.Element):Dynamic {
+		var att = t.getAttribute(TRANSFORM);
+		if (att == null)
+			return {x: 0, y: 0}; // TODO [mck] not sure this is the best solution
+		var trans:String = att.split('(')[1].split(')')[0];
+		var arr:Array<String> = trans.split(',');
+		return {x: arr[0], y: arr[1]};
 	}
 
 	private function complete():Void {
@@ -631,11 +575,7 @@ class GoSVG {
 				_props.set(n, _rangeReverse);
 			}
 			// [mck] reset the time and ignore this function for now... :)
-			if (_isTimeBased) {
-				this._initTime = getTimer();
-			} else {
-				this._initTime = _duration;
-			}
+			this._initTime = _duration;
 			_isYoyo = false;
 			return;
 		}
@@ -655,22 +595,10 @@ class GoSVG {
 	 */
 	function getDuration(duration:Float):Int {
 		var d = 0;
-		if (_isTimeBased) {
-			d = Std.int(duration * 1000); // convert seconds to miliseconds
-		} else {
-			if (duration <= 0)
-				duration = 0.1;
-			d = Std.int(duration * FRAME_RATE); // seconds * FPS = frames
-		}
+		if (duration <= 0)
+			duration = 0.1;
+		d = Std.int(duration * FRAME_RATE); // seconds * FPS = frames
 		return d;
-	}
-
-	/**
-	 * get time values
-	 * TODO: I am forcing timer into Int... this works for JS, not sure for others
-	 */
-	function getTimer():Int {
-		return Std.int(Date.now().getTime());
 	}
 
 	private function destroy():Void {

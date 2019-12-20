@@ -70,6 +70,7 @@ Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
 };
 var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
+	this.TRANSFORM = "transform";
 	this.VERSION = "2.0.0";
 	this.DEBUG = true;
 	this.FRAME_RATE = 60;
@@ -78,7 +79,6 @@ var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
 	this._delay = 0;
 	this._initTime = 0;
 	this._isDelayDone = false;
-	this._isTimeBased = false;
 	this._isWiggle = false;
 	this._isYoyo = false;
 	this._isFrom = false;
@@ -91,11 +91,7 @@ var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
 	this._seconds = duration;
 	this._target = target;
 	this._duration = this.getDuration(duration);
-	if(this._isTimeBased) {
-		this._initTime = this.getTimer();
-	} else {
-		this._initTime = this._duration;
-	}
+	this._initTime = this._duration;
 	GoSVG._tweens.push(this);
 	if(this.DEBUG) {
 		window.console.log("New GoSVG - _id: \"" + this._id + "\" / _duration: " + this._duration + " / _initTime: " + this._initTime + " / _tweens.length: " + GoSVG._tweens.length);
@@ -211,16 +207,7 @@ GoSVG.wiggleProp = function(target,prop,value,wiggleRoom) {
 	return _go1;
 };
 GoSVG.prototype = {
-	isTimeBased: function(isTimeBased) {
-		if(isTimeBased == null) {
-			isTimeBased = true;
-		}
-		window.console.warn("Fixme: this doesn\t work right now");
-		this._isTimeBased = isTimeBased;
-		this._duration = this._duration / this.FRAME_RATE | 0;
-		return this;
-	}
-	,width: function(value) {
+	width: function(value) {
 		var objValue = 0;
 		if(Object.prototype.hasOwnProperty.call(this._target,"width")) {
 			objValue = Reflect.getProperty(this._target,"width");
@@ -384,45 +371,123 @@ GoSVG.prototype = {
 		return this;
 	}
 	,pos: function(x,y,z) {
-		var objValue = 0;
-		if(Object.prototype.hasOwnProperty.call(this._target,"x")) {
-			objValue = Reflect.getProperty(this._target,"x");
+		var tagName = this._target.tagName;
+		switch(tagName) {
+		case "circle":case "ellipse":
+			var objValue = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"cx")) {
+				objValue = Reflect.getProperty(this._target,"cx");
+			}
+			var _range = { key : "cx", from : this._isFrom ? x : objValue, to : !this._isFrom ? x : objValue};
+			var _this = this._props;
+			if(__map_reserved["cx"] != null) {
+				_this.setReserved("cx",_range);
+			} else {
+				_this.h["cx"] = _range;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		case "line":case "path":case "polygon":case "polyline":
+			var objValue1 = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"transform-x")) {
+				objValue1 = Reflect.getProperty(this._target,"transform-x");
+			}
+			var _range1 = { key : "transform-x", from : this._isFrom ? x : objValue1, to : !this._isFrom ? x : objValue1};
+			var _this1 = this._props;
+			if(__map_reserved["transform-x"] != null) {
+				_this1.setReserved("transform-x",_range1);
+			} else {
+				_this1.h["transform-x"] = _range1;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		case "rect":
+			var objValue2 = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"x")) {
+				objValue2 = Reflect.getProperty(this._target,"x");
+			}
+			var _range2 = { key : "x", from : this._isFrom ? x : objValue2, to : !this._isFrom ? x : objValue2};
+			var _this2 = this._props;
+			if(__map_reserved["x"] != null) {
+				_this2.setReserved("x",_range2);
+			} else {
+				_this2.h["x"] = _range2;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		default:
+			window.console.warn("new tagName: " + tagName + "??");
 		}
-		var _range = { key : "x", from : this._isFrom ? x : objValue, to : !this._isFrom ? x : objValue};
-		var _this = this._props;
-		if(__map_reserved["x"] != null) {
-			_this.setReserved("x",_range);
-		} else {
-			_this.h["x"] = _range;
-		}
-		if(this._isFrom) {
-			this.updateProperties(0);
-		}
-		var objValue1 = 0;
-		if(Object.prototype.hasOwnProperty.call(this._target,"y")) {
-			objValue1 = Reflect.getProperty(this._target,"y");
-		}
-		var _range1 = { key : "y", from : this._isFrom ? y : objValue1, to : !this._isFrom ? y : objValue1};
-		var _this1 = this._props;
-		if(__map_reserved["y"] != null) {
-			_this1.setReserved("y",_range1);
-		} else {
-			_this1.h["y"] = _range1;
-		}
-		if(this._isFrom) {
-			this.updateProperties(0);
+		var tagName1 = this._target.tagName;
+		switch(tagName1) {
+		case "circle":case "ellipse":
+			var objValue3 = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"cy")) {
+				objValue3 = Reflect.getProperty(this._target,"cy");
+			}
+			var _range3 = { key : "cy", from : this._isFrom ? y : objValue3, to : !this._isFrom ? y : objValue3};
+			var _this3 = this._props;
+			if(__map_reserved["cy"] != null) {
+				_this3.setReserved("cy",_range3);
+			} else {
+				_this3.h["cy"] = _range3;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		case "line":case "path":case "polygon":case "polyline":
+			var objValue4 = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"transform-y")) {
+				objValue4 = Reflect.getProperty(this._target,"transform-y");
+			}
+			var _range4 = { key : "transform-y", from : this._isFrom ? y : objValue4, to : !this._isFrom ? y : objValue4};
+			var _this4 = this._props;
+			if(__map_reserved["transform-y"] != null) {
+				_this4.setReserved("transform-y",_range4);
+			} else {
+				_this4.h["transform-y"] = _range4;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		case "rect":
+			var objValue5 = 0;
+			if(Object.prototype.hasOwnProperty.call(this._target,"y")) {
+				objValue5 = Reflect.getProperty(this._target,"y");
+			}
+			var _range5 = { key : "y", from : this._isFrom ? y : objValue5, to : !this._isFrom ? y : objValue5};
+			var _this5 = this._props;
+			if(__map_reserved["y"] != null) {
+				_this5.setReserved("y",_range5);
+			} else {
+				_this5.h["y"] = _range5;
+			}
+			if(this._isFrom) {
+				this.updateProperties(0);
+			}
+			break;
+		default:
+			window.console.warn("new tagName: " + tagName1 + "??");
 		}
 		if(z != null) {
-			var objValue2 = 0;
+			var objValue6 = 0;
 			if(Object.prototype.hasOwnProperty.call(this._target,"z")) {
-				objValue2 = Reflect.getProperty(this._target,"z");
+				objValue6 = Reflect.getProperty(this._target,"z");
 			}
-			var _range2 = { key : "z", from : this._isFrom ? z : objValue2, to : !this._isFrom ? z : objValue2};
-			var _this2 = this._props;
+			var _range6 = { key : "z", from : this._isFrom ? z : objValue6, to : !this._isFrom ? z : objValue6};
+			var _this6 = this._props;
 			if(__map_reserved["z"] != null) {
-				_this2.setReserved("z",_range2);
+				_this6.setReserved("z",_range6);
 			} else {
-				_this2.h["z"] = _range2;
+				_this6.h["z"] = _range6;
 			}
 			if(this._isFrom) {
 				this.updateProperties(0);
@@ -596,20 +661,16 @@ GoSVG.prototype = {
 		this.destroy();
 	}
 	,init: function() {
-		if(this._isTimeBased) {
-			window.console.log("TODO: build timebased animation");
-		} else if(GoSVG._requestId == null) {
+		if(GoSVG._requestId == null) {
 			window.console.info("start frame animation");
 			GoSVG._requestId = window.requestAnimationFrame($bind(this,this.onEnterFrameHandler));
 		}
 	}
 	,onEnterFrameHandler: function(time) {
 		if(GoSVG._tweens.length <= 0) {
-			if(!this._isTimeBased) {
-				window.console.info("kill _requestId: " + GoSVG._requestId);
-				window.cancelAnimationFrame(GoSVG._requestId);
-				return;
-			}
+			window.console.info("kill _requestId: " + GoSVG._requestId);
+			window.cancelAnimationFrame(GoSVG._requestId);
+			return;
 		} else {
 			var _g = 0;
 			var _g1 = GoSVG._tweens.length;
@@ -623,9 +684,6 @@ GoSVG.prototype = {
 		GoSVG._requestId = window.requestAnimationFrame($bind(this,this.onEnterFrameHandler));
 	}
 	,update: function() {
-		if(this._delay > 0 && this._isTimeBased) {
-			window.console.warn("FIXME this doesn't work yet");
-		}
 		if(this._delay > 0) {
 			this._delay--;
 			return;
@@ -643,9 +701,6 @@ GoSVG.prototype = {
 		this._isDelayDone = true;
 		this._initTime--;
 		var progressed = this._duration - this._initTime;
-		if(this._isTimeBased) {
-			progressed = this.getTimer() - this._initTime;
-		}
 		if(progressed >= this._duration) {
 			this.updateProperties(this._duration);
 			this.complete();
@@ -669,15 +724,26 @@ GoSVG.prototype = {
 			var range = __map_reserved[n1] != null ? _this.getReserved(n1) : _this.h[n1];
 			switch(n1) {
 			case "transform-x":
-				this._target.setAttribute("transform","translate( " + this._easing.ease(time,range.from,range.to - range.from,this._duration) + " )");
+				var ypos = this.getTransform(this._target).y;
+				this._target.setAttribute(this.TRANSFORM,"translate(" + this._easing.ease(time,range.from,range.to - range.from,this._duration) + ", " + ypos + ")");
 				break;
 			case "transform-y":
-				this._target.setAttribute("transform","translate(0, " + this._easing.ease(time,range.from,range.to - range.from,this._duration) + " )");
+				var xpos = this.getTransform(this._target).y;
+				this._target.setAttribute(this.TRANSFORM,"translate(" + xpos + ", " + this._easing.ease(time,range.from,range.to - range.from,this._duration) + " )");
 				break;
 			default:
 				this._target.setAttribute(n1,"" + this._easing.ease(time,range.from,range.to - range.from,this._duration));
 			}
 		}
+	}
+	,getTransform: function(t) {
+		var att = t.getAttribute(this.TRANSFORM);
+		if(att == null) {
+			return { x : 0, y : 0};
+		}
+		var trans = att.split("(")[1].split(")")[0];
+		var arr = trans.split(",");
+		return { x : arr[0], y : arr[1]};
 	}
 	,complete: function() {
 		if(this.DEBUG) {
@@ -697,11 +763,7 @@ GoSVG.prototype = {
 					_this1.h[n1] = _rangeReverse;
 				}
 			}
-			if(this._isTimeBased) {
-				this._initTime = this.getTimer();
-			} else {
-				this._initTime = this._duration;
-			}
+			this._initTime = this._duration;
 			this._isYoyo = false;
 			return;
 		}
@@ -714,18 +776,11 @@ GoSVG.prototype = {
 	}
 	,getDuration: function(duration) {
 		var d = 0;
-		if(this._isTimeBased) {
-			d = duration * 1000 | 0;
-		} else {
-			if(duration <= 0) {
-				duration = 0.1;
-			}
-			d = duration * this.FRAME_RATE | 0;
+		if(duration <= 0) {
+			duration = 0.1;
 		}
+		d = duration * this.FRAME_RATE | 0;
 		return d;
-	}
-	,getTimer: function() {
-		return new Date().getTime() | 0;
 	}
 	,destroy: function() {
 		if(Lambda.has(GoSVG._tweens,this)) {

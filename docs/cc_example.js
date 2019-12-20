@@ -9,27 +9,11 @@ Main.main = function() {
 Main.prototype = {
 	init: function() {
 		window.document.addEventListener("DOMContentLoaded",function(event) {
-			window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-20 01:09:11" + " ");
-			var svgCircle = window.document.getElementById("circle-1");
-			svgCircle.setAttributeNS(null,"cx","111");
-			svgCircle.setAttribute("cy","111");
-			GoSVG.to(svgCircle, 5).x(500).y(100);
-			var svgRect = window.document.getElementById("rect-1");
-			GoSVG.to(svgRect, 10).x(500).y(555);
-			var svgs = window.document.getElementsByTagName("svg");
-			console.log("src/Main.hx:45:",svgs.length);
-			var svg = window.document.getElementsByTagName("svg")[0];
-			var children = svg.children;
-			var _g = 0;
-			while(_g < children.length) {
-				var i = children[_g];
-				++_g;
-				var child = i;
-			}
+			window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-20 10:11:30" + " ");
 			GoSVG.to(window.document.getElementById("line-1"), 5).x(500).y(100);
 			var _svgPolyLine = window.document.getElementById("polyline-1");
 			_svgPolyLine.setAttribute("transform","translate(333)");
-			console.log("src/Main.hx:61:",_svgPolyLine);
+			GoSVG.to(window.document.getElementById("polygon-1"),5).pos(300,300);
 		});
 	}
 };
