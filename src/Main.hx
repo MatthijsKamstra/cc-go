@@ -1,5 +1,7 @@
 package;
 
+import js.html.svg.Rect;
+import js.html.svg.SVGElement;
 import js.Syntax;
 import js.html.svg.Element;
 import js.Browser.*;
@@ -42,18 +44,29 @@ class Main {
 				// console.log('${_svgRect.x}');
 				// trace(Reflect.field(_svgRect, 'y'));
 
-				var svgs = document.getElementsByTagName('svg');
-				trace(svgs.length);
-
-				var svg = document.getElementsByTagName('svg')[0];
-				var children = (svg.children);
-				for (i in children) {
-					var child = i;
-					// console.log(i.tagName);
-				}
-
-				// var els = svg.get
 			 */
+
+			var svgs = document.getElementsByTagName('svg');
+			trace(svgs.length);
+
+			var svg:SVGElement = cast document.getElementsByTagName('svg')[0];
+			var children = (svg.children);
+			for (i in children) {
+				var child = i;
+				// console.log(i.tagName);
+			}
+
+			var svgViewBox = svg.getAttribute('viewBox');
+			trace('${svgViewBox}');
+
+			var svgRect:Rect = (svg.viewBox.baseVal);
+			trace(svgRect);
+
+			// var svgViewBoxArray = svgViewBox.split(' ');
+			// var svgX = svgViewBoxArray[0];
+			// var svgY = svgViewBoxArray[1];
+			// var svgWidth:Float = Std.parseFloat(svgViewBoxArray[2]);
+			// var svgHeight:Float = Std.parseFloat(svgViewBoxArray[3]);
 
 			// untyped again <line>
 			Syntax.code('GoSVG.to({0}, {1}).x({2}).y({3})', document.getElementById('line-1'), 5, 500, 100);
@@ -66,6 +79,9 @@ class Main {
 			// use externs <polygon>
 			// cc.lets.extern.GoSVG.to(cast document.getElementById('polygon-1'), 2).x(200).y(300);
 			cc.lets.extern.GoSVG.to(cast document.getElementById('polygon-1'), 5).pos(300, 300);
+
+			cc.lets.extern.GoSVG.to(cast document.getElementById('group-plus'), 5).pos(Math.random() * svgRect.width, Math.random() * svgRect.height);
+			// cc.lets.extern.GoSVG.to(cast document.getElementById('group-plus'), 5).pos(400, 10);
 		});
 	}
 

@@ -9,11 +9,26 @@ Main.main = function() {
 Main.prototype = {
 	init: function() {
 		window.document.addEventListener("DOMContentLoaded",function(event) {
-			window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-20 10:11:30" + " ");
+			window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-20 12:14:21" + " ");
+			var svgs = window.document.getElementsByTagName("svg");
+			console.log("src/Main.hx:50:",svgs.length);
+			var svg = window.document.getElementsByTagName("svg")[0];
+			var children = svg.children;
+			var _g = 0;
+			while(_g < children.length) {
+				var i = children[_g];
+				++_g;
+				var child = i;
+			}
+			var svgViewBox = svg.getAttribute("viewBox");
+			console.log("src/Main.hx:60:","" + svgViewBox);
+			var svgRect = svg.viewBox.baseVal;
+			console.log("src/Main.hx:63:",svgRect);
 			GoSVG.to(window.document.getElementById("line-1"), 5).x(500).y(100);
 			var _svgPolyLine = window.document.getElementById("polyline-1");
 			_svgPolyLine.setAttribute("transform","translate(333)");
 			GoSVG.to(window.document.getElementById("polygon-1"),5).pos(300,300);
+			GoSVG.to(window.document.getElementById("group-plus"),5).pos(Math.random() * svgRect.width,Math.random() * svgRect.height);
 		});
 	}
 };

@@ -260,7 +260,7 @@ GoSVG.prototype = {
 				this.updateProperties(0);
 			}
 			break;
-		case "line":case "path":case "polygon":case "polyline":
+		case "g":case "line":case "path":case "polygon":case "polyline":
 			var objValue1 = 0;
 			if(Object.prototype.hasOwnProperty.call(this._target,"transform-x")) {
 				objValue1 = Reflect.getProperty(this._target,"transform-x");
@@ -316,7 +316,7 @@ GoSVG.prototype = {
 				this.updateProperties(0);
 			}
 			break;
-		case "line":case "path":case "polygon":case "polyline":
+		case "g":case "line":case "path":case "polygon":case "polyline":
 			var objValue1 = 0;
 			if(Object.prototype.hasOwnProperty.call(this._target,"transform-y")) {
 				objValue1 = Reflect.getProperty(this._target,"transform-y");
@@ -389,7 +389,7 @@ GoSVG.prototype = {
 				this.updateProperties(0);
 			}
 			break;
-		case "line":case "path":case "polygon":case "polyline":
+		case "g":case "line":case "path":case "polygon":case "polyline":
 			var objValue1 = 0;
 			if(Object.prototype.hasOwnProperty.call(this._target,"transform-x")) {
 				objValue1 = Reflect.getProperty(this._target,"transform-x");
@@ -442,7 +442,7 @@ GoSVG.prototype = {
 				this.updateProperties(0);
 			}
 			break;
-		case "line":case "path":case "polygon":case "polyline":
+		case "g":case "line":case "path":case "polygon":case "polyline":
 			var objValue4 = 0;
 			if(Object.prototype.hasOwnProperty.call(this._target,"transform-y")) {
 				objValue4 = Reflect.getProperty(this._target,"transform-y");
@@ -728,7 +728,7 @@ GoSVG.prototype = {
 				this._target.setAttribute(this.TRANSFORM,"translate(" + this._easing.ease(time,range.from,range.to - range.from,this._duration) + ", " + ypos + ")");
 				break;
 			case "transform-y":
-				var xpos = this.getTransform(this._target).y;
+				var xpos = this.getTransform(this._target).x;
 				this._target.setAttribute(this.TRANSFORM,"translate(" + xpos + ", " + this._easing.ease(time,range.from,range.to - range.from,this._duration) + " )");
 				break;
 			default:

@@ -221,7 +221,7 @@ class GoSVG {
 				prop('x', value);
 			case 'circle', 'ellipse':
 				prop('cx', value);
-			case 'line', 'polyline', 'polygon', 'path':
+			case 'line', 'polyline', 'polygon', 'path', 'g':
 				prop('transform-x', value);
 			// console.warn('${tagName}.x doesn\'t work yet');
 			default:
@@ -245,7 +245,7 @@ class GoSVG {
 				prop('y', value);
 			case 'circle', 'ellipse':
 				prop('cy', value);
-			case 'line', 'polyline', 'polygon', 'path':
+			case 'line', 'polyline', 'polygon', 'path', 'g':
 				prop('transform-y', value);
 			default:
 				console.warn('new tagName: ${tagName}??');
@@ -542,7 +542,7 @@ class GoSVG {
 					var ypos = getTransform(_target).y;
 					_target.setAttribute(TRANSFORM, 'translate(${_easing.ease(time, range.from, (range.to - range.from), _duration)}, $ypos)');
 				case 'transform-y':
-					var xpos = getTransform(_target).y;
+					var xpos = getTransform(_target).x;
 					_target.setAttribute(TRANSFORM, 'translate($xpos, ${_easing.ease(time, range.from, (range.to - range.from), _duration)} )');
 				default:
 					_target.setAttribute(n, '${_easing.ease(time, range.from, (range.to - range.from), _duration)}');
