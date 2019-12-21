@@ -1,5 +1,6 @@
 package cc.lets.extern;
 
+import js.html.svg.SVGElement;
 import cc.lets.easing.IEasing;
 import js.html.svg.Element;
 
@@ -11,6 +12,7 @@ extern class GoSVG {
 	// function new();
 	// function myFunc(prop:String):Void;
 	static function test(target:Element, duration:Float):GoSVG;
+	static function svg(element:SVGElement):SVGObject;
 
 	static function to(target:js.html.svg.Element, duration:Float):GoSVG;
 	static function from(target:Dynamic, duration:Float):GoSVG;
@@ -30,12 +32,14 @@ extern class GoSVG {
 	function z(value:Float):GoSVG;
 
 	function pos(x:Float, y:Float, ?z:Float):GoSVG;
-	function rotation(degree:Float):GoSVG;
+	function rotation(degree:Float, ?x:Float, ?y:Float):GoSVG;
 
 	function degree(degree:Float):GoSVG;
-
 	function radians(degree:Float):GoSVG;
+
 	function alpha(value:Float):GoSVG;
+	function opacity(value:Float):GoSVG;
+
 	function scale(value:Float):GoSVG;
 	function yoyo():GoSVG;
 	function delay(duration:Float):GoSVG;
@@ -49,3 +53,11 @@ extern class GoSVG {
 
 	public function stop():Void;
 }
+
+typedef SVGObject = {
+	@:optional var _id:Int;
+	var x:Float;
+	var y:Float;
+	var width:Float;
+	var height:Float;
+};
