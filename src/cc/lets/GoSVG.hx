@@ -1,19 +1,25 @@
 package cc.lets;
 
-import cc.lets.Easing;
 import haxe.Timer;
+import js.Browser.*;
+import cc.lets.Easing;
 import cc.lets.easing.Quad;
 import cc.lets.easing.IEasing;
-import js.Browser.*;
+import js.html.svg.Rect;
+import js.html.svg.SVGElement;
+import js.html.svg.Element;
 
 /**
- * version
- * 		2.0.0 - Start with GoSVG/ removing timebased stuff
- * 		1.1.0 - 3D additions (z-dir)
- * 		1.0.9 - Haxe 4 update
- * 		1.0.8 - arc
- * 		1.0.7 - wiggle
- * 		1.0.6 - convert to js only
+
+
+	/**
+	* version
+	* 		2.0.0 - Start with GoSVG/ removing timebased stuff
+	* 		1.1.0 - 3D additions (z-dir)
+	* 		1.0.9 - Haxe 4 update
+	* 		1.0.8 - arc
+	* 		1.0.7 - wiggle
+	* 		1.0.6 - convert to js only
  */
 @:expose
 @:native("GoSVG")
@@ -28,6 +34,7 @@ class GoSVG {
 	// private var _easing:Float->Float = Easing.linear;
 	private var _easing:IEasing = Quad.easeOut;
 	private var _options:Dynamic = cast {};
+	private var _transform:Transform;
 	private var _props = new Map<String, Range>();
 	private var _isFrom:Bool = false;
 	private var _isYoyo:Bool = false;
@@ -36,7 +43,6 @@ class GoSVG {
 	private var _initTime:Int = 0; // should work with time (miliseconds) and frames (FPS)
 	private var _delay:Int = 0;
 	private var _seconds:Float = 0;
-	private var _arc:Float = 0;
 	private var FRAME_RATE:Int = 60; // 60 frames per second (FPS)
 	private var DEBUG:Bool = true;
 	private var VERSION:String = '2.0.0';
@@ -48,8 +54,8 @@ class GoSVG {
 	 *
 	 * @example		cc.lets.GoSVG.to(foobarMc, 1.5);
 	 *
-	 * @param  target   	object to animate
-	 * @param  duration 	in seconds
+	 * @param target   	object to animate
+	 * @param duration 	in seconds
 	 */
 	public function new(target:js.html.svg.Element, duration:Float) {
 		console.log('new GoSVG($target, $duration)');
@@ -59,6 +65,7 @@ class GoSVG {
 		this._target = target;
 		this._duration = getDuration(duration);
 		this._initTime = this._duration;
+		this._transform = {};
 		_tweens.push(this);
 		if (DEBUG)
 			console.log('New GoSVG - _id: "$_id" / _duration: '
@@ -79,12 +86,37 @@ class GoSVG {
 	}
 
 	/**
+	 * tool to extract data from svg element,
+	 * - start postion x svg document
+	 * - start postion y svg document
+	 * - start postion width svg document
+	 * - start postion height	 svg document
+	 *
+	 * @example: 	var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
+	 *
+	 * @param element		SVGElement
+	 * @return SVGObject
+	 */
+	static inline public function svg(element:js.html.svg.SVGElement):SVGObject {
+		var svg:SVGElement = element;
+		var svgViewBox = svg.getAttribute('viewBox');
+		var svgRect:Rect = (svg.viewBox.baseVal);
+		return {
+			_id: "",
+			x: svgRect.x,
+			y: svgRect.y,
+			width: svgRect.width,
+			height: svgRect.height,
+		};
+	}
+
+	/**
 	 * Animate an object TO another state (like position, scale, rotation, alpha)
 	 *
 	 * @example		lets.GoSVG.to(foobarMc, 1.5);
 	 *
-	 * @param  target   	object to animate
-	 * @param  duration 	in seconds
+	 * @param target   	object to animate
+	 * @param duration 	in seconds
 	 * @return          Go
 	 */
 	static inline public function to(target:js.html.svg.Element, duration:Float):GoSVG {
@@ -98,8 +130,8 @@ class GoSVG {
 	 *
 	 * @example		lets.GoSVG.from(foobarMc, 1.5);
 	 *
-	 * @param  target   	object to animate
-	 * @param  duration 	in seconds
+	 * @param target   	object to animate
+	 * @param duration 	in seconds
 	 * @return          Go
 	 */
 	static inline public function from(target:Dynamic, duration:Float):GoSVG {
@@ -114,7 +146,7 @@ class GoSVG {
 	 *
 	 * @example		lets.GoSVG.timer(1.5).onComplete(onCompleteHandler);
 	 *
-	 * @param  duration 	in seconds
+	 * @param duration 	in seconds
 	 * @return          Go
 	 */
 	static inline public function timer(duration:Float):GoSVG {
@@ -128,7 +160,7 @@ class GoSVG {
 	 * @example		Go.frames(1).onComplete(onCompleteHandler);
 	 *
 	 * @param frames 	frames to wait
-	 * @return Go
+	 * @return GoSVG
 	 */
 	static inline public function frames(frames:Int):GoSVG {
 		var Go = new GoSVG(null, (frames * 60));
@@ -144,7 +176,7 @@ class GoSVG {
 	 * @param x				centerpoint x
 	 * @param y				centerpoint y
 	 * @param wiggleRoom	offset from x and y
-	 * @return Go
+	 * @return GoSVG
 	 */
 	static inline public function wiggle(target:Dynamic, x:Float, y:Float, ?wiggleRoom:Float = 10):GoSVG {
 		var _go = new GoSVG(target, 1 + (Math.random()));
@@ -169,7 +201,7 @@ class GoSVG {
 	 * @param prop			value you want to animate
 	 * @param value			starting point value
 	 * @param wiggleRoom	offset from starting point, max min
-	 * @return Go
+	 * @return GoSVG
 	 */
 	static inline public function wiggleProp(target:Dynamic, prop:String, value:Float, ?wiggleRoom:Float = 10):GoSVG {
 		var _go = new GoSVG(target, 1 + (Math.random()));
@@ -189,7 +221,7 @@ class GoSVG {
 	/**
 	 * [Description]
 	 * @param value
-	 * @return Go
+	 * @return GoSVG
 	 */
 	inline public function width(value:Float):GoSVG {
 		prop('width', value);
@@ -199,7 +231,7 @@ class GoSVG {
 	/**
 	 * [Description]
 	 * @param value
-	 * @return Go
+	 * @return GoSVG
 	 */
 	inline public function height(value:Float):GoSVG {
 		prop('height', value);
@@ -211,22 +243,27 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).x(10);
 	 *
-	 * @param  value 	x-position
+	 * @param value 	x-position
 	 * @return       Go
 	 */
 	inline public function x(value:Float):GoSVG {
-		var tagName = this._target.tagName;
-		switch (tagName) {
-			case 'rect':
-				prop('x', value);
-			case 'circle', 'ellipse':
-				prop('cx', value);
-			case 'line', 'polyline', 'polygon', 'path', 'g':
-				prop('transform-x', value);
-			// console.warn('${tagName}.x doesn\'t work yet');
-			default:
-				console.warn('new tagName: ${tagName}??');
+		// var tagName = this._target.tagName;
+		// switch (tagName) {
+		// 	case 'rect':
+		// 		prop('x', value);
+		// 	case 'circle', 'ellipse':
+		// 		prop('cx', value);
+		// 	case 'line', 'polyline', 'polygon', 'path', 'g':
+		// 		prop('transform-x', value);
+		// 	// console.warn('${tagName}.x doesn\'t work yet');
+		// 	default:
+		// 		console.warn('new tagName: ${tagName}??');
+		// }
+		prop('transform-x', value);
+		if (this._transform.translate == null) {
+			this._transform.translate = {x: 0};
 		}
+		this._transform.translate.x = value;
 		return this;
 	}
 
@@ -235,21 +272,26 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).y(10);
 	 *
-	 * @param  value 	y-position
+	 * @param value 	y-position
 	 * @return       Go
 	 */
 	inline public function y(value:Float):GoSVG {
-		var tagName = this._target.tagName;
-		switch (tagName) {
-			case 'rect':
-				prop('y', value);
-			case 'circle', 'ellipse':
-				prop('cy', value);
-			case 'line', 'polyline', 'polygon', 'path', 'g':
-				prop('transform-y', value);
-			default:
-				console.warn('new tagName: ${tagName}??');
+		// var tagName = this._target.tagName;
+		// switch (tagName) {
+		// 	case 'rect':
+		// 		prop('y', value);
+		// 	case 'circle', 'ellipse':
+		// 		prop('cy', value);
+		// 	case 'line', 'polyline', 'polygon', 'path', 'g':
+		// 		prop('transform-y', value);
+		// 	default:
+		// 		console.warn('new tagName: ${tagName}??');
+		// }
+		prop('transform-y', value);
+		if (this._transform.translate == null) {
+			this._transform.translate = {x: 0};
 		}
+		this._transform.translate.y = value;
 		return this;
 	}
 
@@ -260,7 +302,7 @@ class GoSVG {
 	 * @example		Go.to(foobarMc, 1.5).z(10);
 	 *
 	 * @param value
-	 * @return Go
+	 * @return GoSVG
 	 */
 	inline public function z(value:Float):GoSVG {
 		prop('z', value);
@@ -272,14 +314,16 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).pos(10,20);
 	 *
-	 * @param  x 	x-position
-	 * @param  y 	y-position
-	 * @param  z 	(optinal) z-position
-	 * @return       Go
+	 * @param x 	x-position
+	 * @param y 	y-position
+	 * @param z 	(optinal) z-position
+	 * @return       GoSVG
 	 */
 	inline public function pos(x:Float, y:Float, ?z:Float):GoSVG {
 		this.x(x);
 		this.y(y);
+		this._transform.translate.x = x;
+		this._transform.translate.y = y;
 		if (z != null)
 			this.z(z);
 		return this;
@@ -290,21 +334,37 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).rotation(10);
 	 *
-	 * @param  degree 	rotation in degrees (360)
-	 * @return       Go
+	 * @param degree 	rotation in degrees (360)
+	 * @param x			(optional) center point x
+	 * @param y 		(optional) center point x
+	 * @return GoSVGSVG
 	 */
-	inline public function rotation(degree:Float):GoSVG {
+	inline public function rotation(degree:Float, ?x:Float, ?y:Float):GoSVG {
 		prop('rotation', degree);
+		if (this._transform.rotate == null) {
+			this._transform.rotate = {degree: 0};
+		}
+		this._transform.rotate.degree = degree;
+		if (x != null)
+			this._transform.rotate.x = x;
+		if (y != null)
+			this._transform.rotate.y = y;
 		return this;
 	}
 
+	// [mck] might be not so useful anymore!
 	inline public function degree(degree:Float):GoSVG {
 		prop('rotation', degree);
+		this._transform.rotate.degree = degree;
+		// see rotation
 		return this;
 	}
 
+	// [mck] might be not so useful anymore!
 	inline public function radians(degree:Float):GoSVG {
 		prop('rotation', degree * Math.PI / 180);
+		this._transform.rotate.degree = (degree * Math.PI / 180);
+		// see rotation
 		return this;
 	}
 
@@ -315,11 +375,16 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).alpha(.1);
 	 *
-	 * @param  value 	transparanty value (maximum value 1)
+	 * @param value 	transparanty value (maximum value 1)
 	 * @return       Go
 	 */
 	inline public function alpha(value:Float):GoSVG {
-		prop('alpha', value);
+		prop('opacity', value);
+		return this;
+	}
+
+	inline public function opacity(value:Float):GoSVG {
+		prop('opacity', value);
 		return this;
 	}
 
@@ -328,13 +393,13 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).scale(2);
 	 *
-	 * @param  value 	scale (1 is 100% (original scale), 0.5 is 50%, 2 is 200%)
+	 * @param value 	scale (1 is 100% (original scale), 0.5 is 50%, 2 is 200%)
 	 * @return       Go
 	 */
 	inline public function scale(value:Float):GoSVG {
-		prop('scaleX', value); // might be values needed from previous Go version
-		prop('scaleY', value); // might be values needed from previous Go version
 		prop('scale', value);
+		this._transform.scale.x = value;
+		this._transform.scale.y = value;
 		return this;
 	}
 
@@ -348,11 +413,6 @@ class GoSVG {
 	 */
 	inline public function yoyo():GoSVG {
 		_isYoyo = true;
-		return this;
-	}
-
-	inline public function arc(?dir:Int):GoSVG {
-		this._arc = 0;
 		return this;
 	}
 
@@ -374,15 +434,17 @@ class GoSVG {
 	 *
 	 * @example		Go.to(foobarMc, 1.5).prop('counter',10);
 	 *
-	 * @param  key   	description of the property as string
-	 * @param  value 	change to this value
+	 * @param key   	description of the property as string
+	 * @param value 	change to this value
 	 * @return       Go
 	 */
 	inline public function prop(key:String, value:Float):GoSVG {
 		// [mck] TODO set zero value if it doesn't exist
-		var objValue = 0;
-		if (Reflect.hasField(_target, key)) {
-			objValue = Reflect.getProperty(_target, key);
+		var objValue = 0.0;
+
+		// TODO: might need to figure out this value is is color/fill/stroke?
+		if (_target.hasAttribute(key)) {
+			objValue = Std.parseFloat(_target.getAttribute(key));
 		}
 
 		var _range = {key: key, from: (_isFrom) ? value : objValue, to: (!_isFrom) ? value : objValue};
@@ -398,8 +460,8 @@ class GoSVG {
 	/**
 	 * on completion of the animation call a function with param(s)
 	 *
-	 * @param  func         	function to call when animition is complete
-	 * @param  arr<Dynamic> 	params send to function
+	 * @param func         	function to call when animition is complete
+	 * @param arr<Dynamic> 	params send to function
 	 * @return              Go
 	 */
 	inline public function onComplete(func:Dynamic, ?arr:Array<Dynamic>):GoSVG {
@@ -411,8 +473,8 @@ class GoSVG {
 	/**
 	 * on update of the animation call a function with param(s)
 	 *
-	 * @param  func         	function to call when animition is updated
-	 * @param  arr<Dynamic> 	params send to function
+	 * @param func         	function to call when animition is updated
+	 * @param arr<Dynamic> 	params send to function
 	 * @return              Go
 	 */
 	inline public function onAnimationStart(func:haxe.Constraints.Function, ?arr:Array<Dynamic>):GoSVG {
@@ -428,8 +490,8 @@ class GoSVG {
 	 * Go.to(rect, 1.5).x(600).onUpdate(onUpdateHandler, [rect]).onComplete(onAnimateHandler, []);
 	 * ```
 	 *
-	 * @param  func         	function to call when animation is updated
-	 * @param  arr<Dynamic> 	params send to function
+	 * @param func         	function to call when animation is updated
+	 * @param arr<Dynamic> 	params send to function
 	 * @return              Go
 	 */
 	inline public function onUpdate(func:Dynamic, ?arr:Array<Dynamic>):GoSVG {
@@ -443,7 +505,7 @@ class GoSVG {
 	 *
 	 * @example		Go.from(foobarMc, 1.5).x(500).easing(Easing.quad);
 	 *
-	 * @param  easing->Float 		check Easing class
+	 * @param easing->Float 		check Easing class
 	 * @return		Go
 	 */
 	// inline public function ease(easing:Float->Float):GoSVG {
@@ -533,32 +595,80 @@ class GoSVG {
 			return;
 		for (n in _props.keys()) {
 			var range = _props.get(n);
-			// Reflect.setProperty(_target, n, _easing(time / _duration) * (range.to - range.from) + range.from);
-			// Reflect.setProperty(_target, n, _easing.ease(time, range.from, (range.to - range.from), _duration));
-
+			var value = _easing.ease(time, range.from, (range.to - range.from), _duration);
 			// svg changes
 			switch (n) {
 				case 'transform-x':
-					var ypos = getTransform(_target).y;
-					_target.setAttribute(TRANSFORM, 'translate(${_easing.ease(time, range.from, (range.to - range.from), _duration)}, $ypos)');
+					this._transform.translate.x = value;
+					// var ypos = getTransform(_target).y;
+					_target.setAttribute(TRANSFORM, getTransform());
 				case 'transform-y':
-					var xpos = getTransform(_target).x;
-					_target.setAttribute(TRANSFORM, 'translate($xpos, ${_easing.ease(time, range.from, (range.to - range.from), _duration)} )');
+					this._transform.translate.y = value;
+					// var xpos = getTransform(_target).x;
+					_target.setAttribute(TRANSFORM, getTransform());
+				case 'rotation':
+					this._transform.rotate.degree = value;
+					// var xpos = getTransform(_target).x;
+					_target.setAttribute(TRANSFORM, getTransform());
 				default:
-					_target.setAttribute(n, '${_easing.ease(time, range.from, (range.to - range.from), _duration)}');
+					// stroke, fill might be a different pupy
+					// x, y, stroke-width (might become `strokeWidth`), opacity, width, height, r, cx, cy, rx, ry
+					_target.setAttribute(n, '${value}');
 			}
 		}
 		// else throw( "Property "+propertyName+" not found in target!" );
 	}
 
-	private function getTransform(t:js.html.svg.Element):Dynamic {
-		var att = t.getAttribute(TRANSFORM);
-		if (att == null)
-			return {x: 0, y: 0}; // TODO [mck] not sure this is the best solution
-		var trans:String = att.split('(')[1].split(')')[0];
-		var arr:Array<String> = trans.split(',');
-		return {x: arr[0], y: arr[1]};
+	/**
+		<g fill="grey"
+			transform="rotate(-10 50 100)
+			translate(-36 45.5)
+			skewX(40)
+			scale(1 0.5)">
+		</g>
+	 */
+	private function getTransform() {
+		var str = '';
+		if (this._transform.translate != null) {
+			if (this._transform.translate.y == null) {
+				str += 'translate(${this._transform.translate.x} ';
+			} else if (this._transform.translate.x == null) {
+				str += 'translate(0 ${this._transform.translate.y} ';
+			} else {
+				str += 'translate(${this._transform.translate.x}, ${this._transform.translate.x}) ';
+			}
+		}
+		if (this._transform.rotate != null) {
+			if (this._transform.rotate.x == null) {
+				str += 'rotate(${this._transform.rotate.degree}) ';
+			} else {
+				str += 'rotate(${this._transform.rotate.degree}, ${this._transform.rotate.x}, ${this._transform.rotate.y}) ';
+			}
+		}
+		if (this._transform.scale != null) {
+			if (this._transform.scale.y == null) {
+				str += 'rotate(${this._transform.scale.x} ';
+			} else {
+				str += 'rotate(${this._transform.scale.x},${this._transform.scale.y}) ';
+			}
+		}
+		if (this._transform.skewX != null) {
+			str += 'skexX(${this._transform.skewX.degree}) ';
+		}
+		if (this._transform.skewY != null) {
+			str += 'skexX(${this._transform.skewY.degree}) ';
+		}
+		return str;
 	}
+
+	// private function getTransform(t:js.html.svg.Element):Dynamic {
+	// 	var att = t.getAttribute(TRANSFORM);
+	// 	if (att == null)
+	// 		return {x: 0, y: 0}; // TODO [mck] not sure this is the best solution
+	// 	var trans:String = att.split('(')[1].split(')')[0];
+	// 	var arr:Array<String> = trans.split(',');
+	// 	return {x: arr[0], y: arr[1]};
+	// }
 
 	private function complete():Void {
 		if (DEBUG)
@@ -618,3 +728,48 @@ class GoSVG {
 }
 
 typedef Range = {key:String, from:Null<Float>, to:Null<Float>}
+
+typedef Transform = {
+	@:optional var translate:Translate;
+	@:optional var scale:Scale;
+	@:optional var rotate:Rotate;
+	@:optional var skewX:SkewX;
+	@:optional var skewY:SkewY;
+}
+
+typedef Translate = {
+	@:optional var _id:Int;
+	var x:Float;
+	@:optional var y:Float;
+};
+
+typedef Scale = {
+	@:optional var _id:Int;
+	var x:Float; // x-dir
+	@:optional var y:Float; // y-dir
+};
+
+typedef Rotate = {
+	@:optional var _id:Int;
+	var degree:Float;
+	@:optional var x:Float;
+	@:optional var y:Float;
+};
+
+typedef SkewX = {
+	@:optional var _id:Int;
+	var degree:Float;
+};
+
+typedef SkewY = {
+	@:optional var _id:Int;
+	var degree:Float;
+};
+
+typedef SVGObject = {
+	@:optional var _id:String;
+	var x:Float;
+	var y:Float;
+	var width:Float;
+	var height:Float;
+};
