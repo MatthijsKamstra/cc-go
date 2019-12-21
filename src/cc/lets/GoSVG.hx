@@ -38,6 +38,7 @@ class GoSVG {
 	private var _props = new Map<String, Range>();
 	private var _isFrom:Bool = false;
 	private var _isYoyo:Bool = false;
+	private var _isCenter:Bool = false;
 	private var _isWiggle:Bool = false;
 	private var _isDelayDone:Bool = false; // default is frameBased
 	private var _initTime:Int = 0; // should work with time (miliseconds) and frames (FPS)
@@ -81,8 +82,8 @@ class GoSVG {
 
 	static inline public function test(target:js.html.svg.Element, duration:Float = 1.2):GoSVG {
 		console.log('GoSVG.Test($target, $duration)');
-		var Go = new GoSVG(target, duration);
-		return Go;
+		var _go = new GoSVG(target, duration);
+		return _go;
 	}
 
 	/**
@@ -120,9 +121,9 @@ class GoSVG {
 	 * @return          Go
 	 */
 	static inline public function to(target:js.html.svg.Element, duration:Float):GoSVG {
-		var Go = new GoSVG(target, duration);
-		Go._isFrom = false;
-		return Go;
+		var _go = new GoSVG(target, duration);
+		_go._isFrom = false;
+		return _go;
 	}
 
 	/**
@@ -135,10 +136,10 @@ class GoSVG {
 	 * @return          Go
 	 */
 	static inline public function from(target:Dynamic, duration:Float):GoSVG {
-		var Go = new GoSVG(target, duration);
-		Go._isFrom = true;
-		Go.updateProperties(0); // this can't be done faster
-		return Go;
+		var _go = new GoSVG(target, duration);
+		_go._isFrom = true;
+		_go.updateProperties(0); // this can't be done faster
+		return _go;
 	}
 
 	/**
@@ -150,27 +151,27 @@ class GoSVG {
 	 * @return          Go
 	 */
 	static inline public function timer(duration:Float):GoSVG {
-		var Go = new GoSVG(null, duration);
-		return Go;
+		var _go = new GoSVG(null, duration);
+		return _go;
 	}
 
 	/**
-	 * Use Go.frames to create a time/delay to a functoin
+	 * Use GoSVG.frames to create a time/delay to a functoin
 	 *
-	 * @example		Go.frames(1).onComplete(onCompleteHandler);
+	 * @example		GoSVG.frames(1).onComplete(onCompleteHandler);
 	 *
 	 * @param frames 	frames to wait
 	 * @return GoSVG
 	 */
 	static inline public function frames(frames:Int):GoSVG {
-		var Go = new GoSVG(null, (frames * 60));
-		return Go;
+		var _go = new GoSVG(null, (frames * 60));
+		return _go;
 	}
 
 	/**
 	 * continues wiggling of an object in random x and y dir
 	 *
-	 * @example		Go.wiggle(foobarMc, 10, 10, 10);
+	 * @example		GoSVG.wiggle(foobarMc, 10, 10, 10);
 	 *
 	 * @param target   		object to animate
 	 * @param x				centerpoint x
@@ -195,7 +196,7 @@ class GoSVG {
 	/**
 	 * continues wiggling of an object in random dir
 	 *
-	 * @example		Go.wiggleProp(foobarMc.position, 'z', 0, 20);
+	 * @example		GoSVG.wiggleProp(foobarMc.position, 'z', 0, 20);
 	 *
 	 * @param target   		object contains the data to animate
 	 * @param prop			value you want to animate
@@ -241,10 +242,10 @@ class GoSVG {
 	/**
 	 * change the x value of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).x(10);
+	 * @example		GoSVG.to(foobarMc, 1.5).x(10);
 	 *
 	 * @param value 	x-position
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function x(value:Float):GoSVG {
 		// var tagName = this._target.tagName;
@@ -270,10 +271,10 @@ class GoSVG {
 	/**
 	 * change the y value of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).y(10);
+	 * @example		GoSVG.to(foobarMc, 1.5).y(10);
 	 *
 	 * @param value 	y-position
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function y(value:Float):GoSVG {
 		// var tagName = this._target.tagName;
@@ -299,7 +300,7 @@ class GoSVG {
 	 * change the z value of an object
 	 * 3D z added
 	 *
-	 * @example		Go.to(foobarMc, 1.5).z(10);
+	 * @example		GoSVG.to(foobarMc, 1.5).z(10);
 	 *
 	 * @param value
 	 * @return GoSVG
@@ -312,12 +313,12 @@ class GoSVG {
 	/**
 	 * change the y value of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).pos(10,20);
+	 * @example		GoSVG.to(foobarMc, 1.5).pos(10,20);
 	 *
 	 * @param x 	x-position
 	 * @param y 	y-position
 	 * @param z 	(optinal) z-position
-	 * @return       GoSVG
+	 * @return       GoSVGSVG
 	 */
 	inline public function pos(x:Float, y:Float, ?z:Float):GoSVG {
 		this.x(x);
@@ -332,7 +333,7 @@ class GoSVG {
 	/**
 	 * change the rotation value of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).rotation(10);
+	 * @example		GoSVG.to(foobarMc, 1.5).rotation(10);
 	 *
 	 * @param degree 	rotation in degrees (360)
 	 * @param x			(optional) center point x
@@ -373,10 +374,10 @@ class GoSVG {
 	/**
 	 * change the alpha value of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).alpha(.1);
+	 * @example		GoSVG.to(foobarMc, 1.5).alpha(.1);
 	 *
 	 * @param value 	transparanty value (maximum value 1)
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function alpha(value:Float):GoSVG {
 		prop('opacity', value);
@@ -391,10 +392,10 @@ class GoSVG {
 	/**
 	 * change the scale of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).scale(2);
+	 * @example		GoSVG.to(foobarMc, 1.5).scale(2);
 	 *
 	 * @param value 	scale (1 is 100% (original scale), 0.5 is 50%, 2 is 200%)
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function scale(value:Float):GoSVG {
 		prop('scale', value);
@@ -407,9 +408,9 @@ class GoSVG {
 	 * yoyo to the original values of an object
 	 * its back and forth, only once.. use oncomplete to continuesly to do this
 	 *
-	 * @example		Go.to(foobarMc, 1.5).yoyo();
+	 * @example		GoSVG.to(foobarMc, 1.5).yoyo();
 	 *
-	 * @return       Go
+	 * @return       GoSVGSVG
 	 */
 	inline public function yoyo():GoSVG {
 		_isYoyo = true;
@@ -417,12 +418,23 @@ class GoSVG {
 	}
 
 	/**
+	 * WIP
+	 * should calculate the center for rotation
+	 *
+	 * @return GoSVG
+	 */
+	inline public function useCenter():GoSVG {
+		_isCenter = true;
+		return this;
+	}
+
+	/**
 	 * delay the animation in seconds
 	 *
-	 * @example		Go.to(foobarMc, 1.5).delay(1.5);
+	 * @example		GoSVG.to(foobarMc, 1.5).delay(1.5);
 	 *
 	 * @param duration 	delay in seconds
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function delay(duration:Float):GoSVG {
 		_delay = getDuration(duration);
@@ -432,11 +444,11 @@ class GoSVG {
 	/**
 	 * change the property of an object
 	 *
-	 * @example		Go.to(foobarMc, 1.5).prop('counter',10);
+	 * @example		GoSVG.to(foobarMc, 1.5).prop('counter',10);
 	 *
 	 * @param key   	description of the property as string
 	 * @param value 	change to this value
-	 * @return       Go
+	 * @return       GoSVG
 	 */
 	inline public function prop(key:String, value:Float):GoSVG {
 		// [mck] TODO set zero value if it doesn't exist
@@ -487,7 +499,7 @@ class GoSVG {
 	 * on update of the animation call a function with param(s)
 	 *
 	 * ```
-	 * Go.to(rect, 1.5).x(600).onUpdate(onUpdateHandler, [rect]).onComplete(onAnimateHandler, []);
+	 * GoSVG.to(rect, 1.5).x(600).onUpdate(onUpdateHandler, [rect]).onComplete(onAnimateHandler, []);
 	 * ```
 	 *
 	 * @param func         	function to call when animation is updated
@@ -503,7 +515,7 @@ class GoSVG {
 	/**
 	 * change the default (Easing.linear) easing
 	 *
-	 * @example		Go.from(foobarMc, 1.5).x(500).easing(Easing.quad);
+	 * @example		GoSVG.from(foobarMc, 1.5).x(500).easing(Easing.quad);
 	 *
 	 * @param easing->Float 		check Easing class
 	 * @return		Go

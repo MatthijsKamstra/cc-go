@@ -3,7 +3,7 @@
 var Main = function() {
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-21 17:44:00" + " ");
+		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-21 19:56:41" + " ");
 		_gthis.init2();
 	});
 };

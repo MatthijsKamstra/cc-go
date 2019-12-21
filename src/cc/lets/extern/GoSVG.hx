@@ -42,6 +42,7 @@ extern class GoSVG {
 
 	function scale(value:Float):GoSVG;
 	function yoyo():GoSVG;
+	function useCenter():GoSVG;
 	function delay(duration:Float):GoSVG;
 	function prop(key:String, value:Float):GoSVG;
 

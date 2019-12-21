@@ -60,6 +60,7 @@ var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
 	this._initTime = 0;
 	this._isDelayDone = false;
 	this._isWiggle = false;
+	this._isCenter = false;
 	this._isYoyo = false;
 	this._isFrom = false;
 	this._props = new haxe_ds_StringMap();
@@ -85,8 +86,8 @@ GoSVG.test = function(target,duration) {
 		duration = 1.2;
 	}
 	window.console.log("GoSVG.Test(" + Std.string(target) + ", " + duration + ")");
-	var Go = new GoSVG(target,duration);
-	return Go;
+	var _go = new GoSVG(target,duration);
+	return _go;
 };
 GoSVG.svg = function(element) {
 	var svg = element;
@@ -95,23 +96,23 @@ GoSVG.svg = function(element) {
 	return { _id : "", x : svgRect.x, y : svgRect.y, width : svgRect.width, height : svgRect.height};
 };
 GoSVG.to = function(target,duration) {
-	var Go = new GoSVG(target,duration);
-	Go._isFrom = false;
-	return Go;
+	var _go = new GoSVG(target,duration);
+	_go._isFrom = false;
+	return _go;
 };
 GoSVG.from = function(target,duration) {
-	var Go = new GoSVG(target,duration);
-	Go._isFrom = true;
-	Go.updateProperties(0);
-	return Go;
+	var _go = new GoSVG(target,duration);
+	_go._isFrom = true;
+	_go.updateProperties(0);
+	return _go;
 };
 GoSVG.timer = function(duration) {
-	var Go = new GoSVG(null,duration);
-	return Go;
+	var _go = new GoSVG(null,duration);
+	return _go;
 };
 GoSVG.frames = function(frames) {
-	var Go = new GoSVG(null,frames * 60);
-	return Go;
+	var _go = new GoSVG(null,frames * 60);
+	return _go;
 };
 GoSVG.wiggle = function(target,x,y,wiggleRoom) {
 	if(wiggleRoom == null) {
@@ -463,6 +464,10 @@ GoSVG.prototype = {
 	}
 	,yoyo: function() {
 		this._isYoyo = true;
+		return this;
+	}
+	,useCenter: function() {
+		this._isCenter = true;
 		return this;
 	}
 	,delay: function(duration) {
