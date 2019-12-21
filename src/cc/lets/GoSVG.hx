@@ -45,7 +45,7 @@ class GoSVG {
 	private var _delay:Int = 0;
 	private var _seconds:Float = 0;
 	private var FRAME_RATE:Int = 60; // 60 frames per second (FPS)
-	private var DEBUG:Bool = true;
+	private var DEBUG:Bool = false;
 	private var VERSION:String = '2.0.0';
 	// var names
 	private var TRANSFORM = 'transform';
@@ -59,7 +59,7 @@ class GoSVG {
 	 * @param duration 	in seconds
 	 */
 	public function new(target:js.html.svg.Element, duration:Float) {
-		console.log('new GoSVG($target, $duration)');
+		// console.log('new GoSVG($target, $duration)');
 		_counter++;
 		this._id = '[lets.GoSVG]$VERSION.' + Date.now().getTime();
 		this._seconds = duration;
@@ -474,7 +474,7 @@ class GoSVG {
 	 *
 	 * @param func         	function to call when animition is complete
 	 * @param arr<Dynamic> 	params send to function
-	 * @return              Go
+	 * @return              GoSVG
 	 */
 	inline public function onComplete(func:Dynamic, ?arr:Array<Dynamic>):GoSVG {
 		_options.onComplete = func;
@@ -487,7 +487,7 @@ class GoSVG {
 	 *
 	 * @param func         	function to call when animition is updated
 	 * @param arr<Dynamic> 	params send to function
-	 * @return              Go
+	 * @return              GoSVG
 	 */
 	inline public function onAnimationStart(func:haxe.Constraints.Function, ?arr:Array<Dynamic>):GoSVG {
 		_options.onAnimationStart = func;
@@ -504,7 +504,7 @@ class GoSVG {
 	 *
 	 * @param func         	function to call when animation is updated
 	 * @param arr<Dynamic> 	params send to function
-	 * @return              Go
+	 * @return              GoSVG
 	 */
 	inline public function onUpdate(func:Dynamic, ?arr:Array<Dynamic>):GoSVG {
 		_options.onUpdate = func;
@@ -542,9 +542,8 @@ class GoSVG {
 	// ____________________________________ private ____________________________________
 	private function init():Void {
 		if (_requestId == null) {
-			console.info('start frame animation');
 			_requestId = window.requestAnimationFrame(onEnterFrameHandler);
-			// trace(_requestId);
+			console.info('GoSVG (${VERSION}) Start frame animation (_requestId: $_requestId)');
 		}
 	}
 
@@ -552,17 +551,19 @@ class GoSVG {
 		// if (_initTime == 0) return;
 		if (_tweens.length <= 0) {
 			// [mck] stop timer, we are done!
-			console.info('kill _requestId: $_requestId');
+			console.info('GoSVG (${VERSION}) Kill _requestId: $_requestId');
 			window.cancelAnimationFrame(_requestId);
+			_requestId = null;
 			return;
-		} else
+		} else {
 			for (i in 0..._tweens.length) {
 				// [mck] FIXME :: don't know exactly why I need to check if _tweens[i] != null, but I do.
 				if (_tweens[i] != null)
 					_tweens[i].update();
 			}
 
-		_requestId = window.requestAnimationFrame(onEnterFrameHandler);
+			_requestId = window.requestAnimationFrame(onEnterFrameHandler);
+		}
 	}
 
 	private function update():Void {
@@ -574,7 +575,7 @@ class GoSVG {
 		}
 		if (!_isDelayDone) {
 			if (DEBUG)
-				console.warn('should trigger only once: ${_id} / ${_requestId} / ${_counter}');
+				console.warn('GoSVG (${VERSION}) Should trigger only once: ${_id} / ${_requestId} / ${_counter}');
 			if (Reflect.isFunction(_options.onAnimationStart)) {
 				var func = _options.onAnimationStart;
 				var arr:Array<Dynamic> = (_options.onAnimationStartParams != null) ? _options.onAnimationStartParams : [];
@@ -599,7 +600,7 @@ class GoSVG {
 	private function updateProperties(time:Float):Void {
 		if (Reflect.isFunction(_options.onUpdate)) {
 			var func = _options.onUpdate;
-			var arr = (_options.onUpdateParams != null) ? _options.onUpdateParams : [];
+			var arr = (_options.onUpdateParams != null) ? _options.onUpdateParams : [time];
 			Reflect.callMethod(func, func, [arr]);
 		}
 		// [mck] for some reason this can be null
@@ -612,15 +613,12 @@ class GoSVG {
 			switch (n) {
 				case 'transform-x':
 					this._transform.translate.x = value;
-					// var ypos = getTransform(_target).y;
 					_target.setAttribute(TRANSFORM, getTransform());
 				case 'transform-y':
 					this._transform.translate.y = value;
-					// var xpos = getTransform(_target).x;
 					_target.setAttribute(TRANSFORM, getTransform());
 				case 'rotation':
 					this._transform.rotate.degree = value;
-					// var xpos = getTransform(_target).x;
 					_target.setAttribute(TRANSFORM, getTransform());
 				default:
 					// stroke, fill might be a different pupy
@@ -632,12 +630,15 @@ class GoSVG {
 	}
 
 	/**
-		<g fill="grey"
-			transform="rotate(-10 50 100)
-			translate(-36 45.5)
-			skewX(40)
-			scale(1 0.5)">
-		</g>
+	 *
+	 * @source: https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/transform
+	 *
+	 * 	<g fill="grey"
+	 *		transform="rotate(-10 50 100)
+	 *		translate(-36 45.5)
+	 *		skewX(40)
+	 *		scale(1 0.5)">
+	 *	</g>
 	 */
 	private function getTransform() {
 		var str = '';
@@ -684,7 +685,7 @@ class GoSVG {
 
 	private function complete():Void {
 		if (DEBUG)
-			console.log('complete :: "$_id", _duration: $_duration, _seconds: $_seconds, _initTime: '
+			console.info('complete :: "$_id", _duration: $_duration, _seconds: $_seconds, _initTime: '
 				+ _initTime
 				+ ' / _tweens.length: '
 				+ _tweens.length);

@@ -16,7 +16,7 @@ import model.constants.App;
 class Main {
 	public function new() {
 		document.addEventListener("DOMContentLoaded", function(event) {
-			console.log('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
+			console.info('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 			// init0();
 			// init1();
 			init2();
@@ -28,6 +28,7 @@ class Main {
 	}
 
 	function init2OnCompletHander() {
+		console.info('onComplete');
 		var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
@@ -35,7 +36,20 @@ class Main {
 			.pos(svgObject.width * Math.random(), svgObject.height * Math.random())
 			.opacity(randomOpacity)
 			.rotation(100, 80, 80)
-			.onComplete(init2OnCompletHander);
+			.onComplete(init2OnCompletHander)
+			.onUpdate(init2OnUpdateHandler)
+			.yoyo();
+		// .onComplete(function() {
+		// 	trace('onComplete');
+		// })
+		// .onUpdate(function() {
+		// 	trace('onUpdate');
+		// });
+	}
+
+	function init2OnUpdateHandler(?time) {
+		var text = document.getElementById('text-2');
+		text.innerHTML = 'time: ${time}';
 	}
 
 	function init1() {

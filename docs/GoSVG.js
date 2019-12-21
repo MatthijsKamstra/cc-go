@@ -53,7 +53,7 @@ Std.string = function(s) {
 var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
 	this.TRANSFORM = "transform";
 	this.VERSION = "2.0.0";
-	this.DEBUG = true;
+	this.DEBUG = false;
 	this.FRAME_RATE = 60;
 	this._seconds = 0;
 	this._delay = 0;
@@ -66,7 +66,6 @@ var GoSVG = $hx_exports["GoSVG"] = function(target,duration) {
 	this._props = new haxe_ds_StringMap();
 	this._options = { };
 	this._easing = cc_lets_easing_Quad.get_easeOut();
-	window.console.log("new GoSVG(" + Std.string(target) + ", " + duration + ")");
 	GoSVG._counter++;
 	this._id = "[lets.GoSVG]" + this.VERSION + "." + new Date().getTime();
 	this._seconds = duration;
@@ -515,14 +514,15 @@ GoSVG.prototype = {
 	}
 	,init: function() {
 		if(GoSVG._requestId == null) {
-			window.console.info("start frame animation");
 			GoSVG._requestId = window.requestAnimationFrame($bind(this,this.onEnterFrameHandler));
+			window.console.info("GoSVG (" + this.VERSION + ") Start frame animation (_requestId: " + GoSVG._requestId + ")");
 		}
 	}
 	,onEnterFrameHandler: function(time) {
 		if(GoSVG._tweens.length <= 0) {
-			window.console.info("kill _requestId: " + GoSVG._requestId);
+			window.console.info("GoSVG (" + this.VERSION + ") Kill _requestId: " + GoSVG._requestId);
 			window.cancelAnimationFrame(GoSVG._requestId);
+			GoSVG._requestId = null;
 			return;
 		} else {
 			var _g = 0;
@@ -533,8 +533,8 @@ GoSVG.prototype = {
 					GoSVG._tweens[i].update();
 				}
 			}
+			GoSVG._requestId = window.requestAnimationFrame($bind(this,this.onEnterFrameHandler));
 		}
-		GoSVG._requestId = window.requestAnimationFrame($bind(this,this.onEnterFrameHandler));
 	}
 	,update: function() {
 		if(this._delay > 0) {
@@ -543,7 +543,7 @@ GoSVG.prototype = {
 		}
 		if(!this._isDelayDone) {
 			if(this.DEBUG) {
-				window.console.warn("should trigger only once: " + this._id + " / " + GoSVG._requestId + " / " + GoSVG._counter);
+				window.console.warn("GoSVG (" + this.VERSION + ") Should trigger only once: " + this._id + " / " + GoSVG._requestId + " / " + GoSVG._counter);
 			}
 			if(Reflect.isFunction(this._options.onAnimationStart)) {
 				var func = this._options.onAnimationStart;
@@ -564,7 +564,7 @@ GoSVG.prototype = {
 	,updateProperties: function(time) {
 		if(Reflect.isFunction(this._options.onUpdate)) {
 			var func = this._options.onUpdate;
-			var arr = this._options.onUpdateParams != null ? this._options.onUpdateParams : [];
+			var arr = this._options.onUpdateParams != null ? this._options.onUpdateParams : [time];
 			func.apply(func,[arr]);
 		}
 		if(this._props == null) {
@@ -629,7 +629,7 @@ GoSVG.prototype = {
 	}
 	,complete: function() {
 		if(this.DEBUG) {
-			window.console.log("complete :: \"" + this._id + "\", _duration: " + this._duration + ", _seconds: " + this._seconds + ", _initTime: " + this._initTime + " / _tweens.length: " + GoSVG._tweens.length);
+			window.console.info("complete :: \"" + this._id + "\", _duration: " + this._duration + ", _seconds: " + this._seconds + ", _initTime: " + this._initTime + " / _tweens.length: " + GoSVG._tweens.length);
 		}
 		if(this._isYoyo) {
 			var n = this._props.keys();

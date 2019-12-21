@@ -3,7 +3,7 @@
 var Main = function() {
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.log("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-21 19:56:41" + " ");
+		window.console.info("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-21 20:58:42" + " ");
 		_gthis.init2();
 	});
 };
@@ -15,10 +15,15 @@ Main.prototype = {
 		this.init2OnCompletHander();
 	}
 	,init2OnCompletHander: function() {
+		window.console.info("onComplete");
 		var svgObject = GoSVG.svg(window.document.getElementById("simple-example"));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
-		GoSVG.to(window.document.getElementById("rect-2"),5).pos(svgObject.width * Math.random(),svgObject.height * Math.random()).opacity(randomOpacity).rotation(100,80,80).onComplete($bind(this,this.init2OnCompletHander));
+		GoSVG.to(window.document.getElementById("rect-2"),5).pos(svgObject.width * Math.random(),svgObject.height * Math.random()).opacity(randomOpacity).rotation(100,80,80).onComplete($bind(this,this.init2OnCompletHander)).onUpdate($bind(this,this.init2OnUpdateHandler)).yoyo();
+	}
+	,init2OnUpdateHandler: function(time) {
+		var text = window.document.getElementById("text-2");
+		text.innerHTML = "time: " + time;
 	}
 };
 var model_constants_App = function() { };
