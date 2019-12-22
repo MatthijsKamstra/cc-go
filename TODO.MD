@@ -9,3 +9,5 @@
 - [ ] onComplete continue
 - [ ] fill
 - [ ] stroke
+- [x] scale
+- [ ] get original position and scale, etc when starting and yoyo

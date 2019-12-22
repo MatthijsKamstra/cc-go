@@ -35,10 +35,11 @@ class Main {
 		GoSVG.to(cast document.getElementById('rect-2'), 5)
 			.pos(svgObject.width * Math.random(), svgObject.height * Math.random())
 			.opacity(randomOpacity)
-			.rotation(100, 80, 80)
-			.onComplete(init2OnCompletHander)
+			.scale(Math.random() * 10)
 			.onUpdate(init2OnUpdateHandler)
+			.rotation(100, 80, 80)
 			.yoyo();
+		// .onComplete(init2OnCompletHander)
 		// .onComplete(function() {
 		// 	trace('onComplete');
 		// })

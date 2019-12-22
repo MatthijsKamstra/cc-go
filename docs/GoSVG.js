@@ -457,6 +457,9 @@ GoSVG.prototype = {
 		if(this._isFrom) {
 			this.updateProperties(0);
 		}
+		if(this._transform.scale == null) {
+			this._transform.scale = { x : 0, y : 0};
+		}
 		this._transform.scale.x = value;
 		this._transform.scale.y = value;
 		return this;
@@ -581,6 +584,11 @@ GoSVG.prototype = {
 				this._transform.rotate.degree = value;
 				this._target.setAttribute(this.TRANSFORM,this.getTransform());
 				break;
+			case "scale":
+				this._transform.scale.x = value;
+				this._transform.scale.y = value;
+				this._target.setAttribute(this.TRANSFORM,this.getTransform());
+				break;
 			case "transform-x":
 				this._transform.translate.x = value;
 				this._target.setAttribute(this.TRANSFORM,this.getTransform());
@@ -614,9 +622,9 @@ GoSVG.prototype = {
 		}
 		if(this._transform.scale != null) {
 			if(this._transform.scale.y == null) {
-				str += "rotate(" + this._transform.scale.x + " ";
+				str += "scale(" + this._transform.scale.x + " ";
 			} else {
-				str += "rotate(" + this._transform.scale.x + "," + this._transform.scale.y + ") ";
+				str += "scale(" + this._transform.scale.x + "," + this._transform.scale.y + ") ";
 			}
 		}
 		if(this._transform.skewX != null) {

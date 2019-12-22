@@ -399,6 +399,9 @@ class GoSVG {
 	 */
 	inline public function scale(value:Float):GoSVG {
 		prop('scale', value);
+		if (this._transform.scale == null) {
+			this._transform.scale = {x: 0, y: 0};
+		}
 		this._transform.scale.x = value;
 		this._transform.scale.y = value;
 		return this;
@@ -620,6 +623,10 @@ class GoSVG {
 				case 'rotation':
 					this._transform.rotate.degree = value;
 					_target.setAttribute(TRANSFORM, getTransform());
+				case 'scale':
+					this._transform.scale.x = value;
+					this._transform.scale.y = value;
+					_target.setAttribute(TRANSFORM, getTransform());
 				default:
 					// stroke, fill might be a different pupy
 					// x, y, stroke-width (might become `strokeWidth`), opacity, width, height, r, cx, cy, rx, ry
@@ -660,9 +667,9 @@ class GoSVG {
 		}
 		if (this._transform.scale != null) {
 			if (this._transform.scale.y == null) {
-				str += 'rotate(${this._transform.scale.x} ';
+				str += 'scale(${this._transform.scale.x} ';
 			} else {
-				str += 'rotate(${this._transform.scale.x},${this._transform.scale.y}) ';
+				str += 'scale(${this._transform.scale.x},${this._transform.scale.y}) ';
 			}
 		}
 		if (this._transform.skewX != null) {

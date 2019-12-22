@@ -3,7 +3,7 @@
 var Main = function() {
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.info("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-21 20:58:42" + " ");
+		window.console.info("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-22 12:25:02" + " ");
 		_gthis.init2();
 	});
 };
@@ -19,7 +19,7 @@ Main.prototype = {
 		var svgObject = GoSVG.svg(window.document.getElementById("simple-example"));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
-		GoSVG.to(window.document.getElementById("rect-2"),5).pos(svgObject.width * Math.random(),svgObject.height * Math.random()).opacity(randomOpacity).rotation(100,80,80).onComplete($bind(this,this.init2OnCompletHander)).onUpdate($bind(this,this.init2OnUpdateHandler)).yoyo();
+		GoSVG.to(window.document.getElementById("rect-2"),5).pos(svgObject.width * Math.random(),svgObject.height * Math.random()).opacity(randomOpacity).scale(Math.random() * 10).onUpdate($bind(this,this.init2OnUpdateHandler)).rotation(100,80,80).yoyo();
 	}
 	,init2OnUpdateHandler: function(time) {
 		var text = window.document.getElementById("text-2");
