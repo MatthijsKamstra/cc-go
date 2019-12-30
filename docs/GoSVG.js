@@ -90,9 +90,33 @@ GoSVG.test = function(target,duration) {
 };
 GoSVG.svg = function(element) {
 	var svg = element;
-	var svgViewBox = svg.getAttribute("viewBox");
-	var svgRect = svg.viewBox.baseVal;
-	return { _id : "", x : svgRect.x, y : svgRect.y, width : svgRect.width, height : svgRect.height};
+	var _id = "";
+	var _x = 0;
+	var _y = 0;
+	var _cx = 0;
+	var _cy = 0;
+	var _width = 0;
+	var _height = 0;
+	var tagName = element.tagName;
+	console.log("src/cc/lets/GoSVG.hx:112:",tagName);
+	_id = tagName;
+	if(tagName == "rect") {
+		_x = (js_Boot.__cast(svg , SVGRectElement)).x.baseVal.value;
+		_y = (js_Boot.__cast(svg , SVGRectElement)).y.baseVal.value;
+		_width = (js_Boot.__cast(svg , SVGRectElement)).width.baseVal.value;
+		_height = (js_Boot.__cast(svg , SVGRectElement)).height.baseVal.value;
+		_cx = (js_Boot.__cast(svg , SVGRectElement)).x.baseVal.value + (js_Boot.__cast(svg , SVGRectElement)).width.baseVal.value / 2;
+		_cy = (js_Boot.__cast(svg , SVGRectElement)).y.baseVal.value + (js_Boot.__cast(svg , SVGRectElement)).height.baseVal.value / 2;
+	}
+	if(element.hasAttribute("viewBox")) {
+		var svgViewBox = element.getAttribute("viewBox");
+		var svgRect = element.viewBox.baseVal;
+		_width = svgRect.width;
+		_height = svgRect.height;
+		_x = svgRect.x;
+		_y = svgRect.y;
+	}
+	return { _id : _id, x : _x, y : _y, width : _width, height : _height, centerX : _cx, centerY : _cy};
 };
 GoSVG.to = function(target,duration) {
 	var _go = new GoSVG(target,duration);
@@ -686,6 +710,13 @@ GoSVG.prototype = {
 			this._delay = 0;
 		}
 	}
+	,__class__: GoSVG
+};
+var cc_lets_easing_IEasing = function() { };
+cc_lets_easing_IEasing.__name__ = true;
+cc_lets_easing_IEasing.__isInterface__ = true;
+cc_lets_easing_IEasing.prototype = {
+	__class__: cc_lets_easing_IEasing
 };
 var cc_lets_easing_Quad = function() { };
 cc_lets_easing_Quad.__name__ = true;
@@ -695,10 +726,12 @@ cc_lets_easing_Quad.get_easeOut = function() {
 var cc_lets_easing_QuadEaseOut = function() {
 };
 cc_lets_easing_QuadEaseOut.__name__ = true;
+cc_lets_easing_QuadEaseOut.__interfaces__ = [cc_lets_easing_IEasing];
 cc_lets_easing_QuadEaseOut.prototype = {
 	ease: function(t,b,c,d) {
 		return -c * (t /= d) * (t - 2) + b;
 	}
+	,__class__: cc_lets_easing_QuadEaseOut
 };
 var cc_lets_easing_Sine = function() { };
 cc_lets_easing_Sine.__name__ = true;
@@ -708,11 +741,16 @@ cc_lets_easing_Sine.get_easeInOut = function() {
 var cc_lets_easing_SineEaseInOut = function() {
 };
 cc_lets_easing_SineEaseInOut.__name__ = true;
+cc_lets_easing_SineEaseInOut.__interfaces__ = [cc_lets_easing_IEasing];
 cc_lets_easing_SineEaseInOut.prototype = {
 	ease: function(t,b,c,d) {
 		return -c / 2 * (Math.cos(Math.PI * t / d) - 1) + b;
 	}
+	,__class__: cc_lets_easing_SineEaseInOut
 };
+var haxe_IMap = function() { };
+haxe_IMap.__name__ = true;
+haxe_IMap.__isInterface__ = true;
 var haxe_Timer = function(time_ms) {
 	var me = this;
 	this.id = setInterval(function() {
@@ -738,11 +776,13 @@ haxe_Timer.prototype = {
 	}
 	,run: function() {
 	}
+	,__class__: haxe_Timer
 };
 var haxe_ds_StringMap = function() {
 	this.h = { };
 };
 haxe_ds_StringMap.__name__ = true;
+haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 haxe_ds_StringMap.prototype = {
 	setReserved: function(key,value) {
 		if(this.rh == null) {
@@ -776,6 +816,7 @@ haxe_ds_StringMap.prototype = {
 		}
 		return out;
 	}
+	,__class__: haxe_ds_StringMap
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -787,9 +828,27 @@ var js__$Boot_HaxeError = function(val) {
 js__$Boot_HaxeError.__name__ = true;
 js__$Boot_HaxeError.__super__ = Error;
 js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
+	__class__: js__$Boot_HaxeError
 });
 var js_Boot = function() { };
 js_Boot.__name__ = true;
+js_Boot.getClass = function(o) {
+	if(o == null) {
+		return null;
+	} else if(((o) instanceof Array)) {
+		return Array;
+	} else {
+		var cl = o.__class__;
+		if(cl != null) {
+			return cl;
+		}
+		var name = js_Boot.__nativeClassName(o);
+		if(name != null) {
+			return js_Boot.__resolveNativeClass(name);
+		}
+		return null;
+	}
+};
 js_Boot.__string_rec = function(o,s) {
 	if(o == null) {
 		return "null";
@@ -855,13 +914,118 @@ js_Boot.__string_rec = function(o,s) {
 		return String(o);
 	}
 };
+js_Boot.__interfLoop = function(cc,cl) {
+	if(cc == null) {
+		return false;
+	}
+	if(cc == cl) {
+		return true;
+	}
+	if(Object.prototype.hasOwnProperty.call(cc,"__interfaces__")) {
+		var intf = cc.__interfaces__;
+		var _g = 0;
+		var _g1 = intf.length;
+		while(_g < _g1) {
+			var i = _g++;
+			var i1 = intf[i];
+			if(i1 == cl || js_Boot.__interfLoop(i1,cl)) {
+				return true;
+			}
+		}
+	}
+	return js_Boot.__interfLoop(cc.__super__,cl);
+};
+js_Boot.__instanceof = function(o,cl) {
+	if(cl == null) {
+		return false;
+	}
+	switch(cl) {
+	case Array:
+		return ((o) instanceof Array);
+	case Bool:
+		return typeof(o) == "boolean";
+	case Dynamic:
+		return o != null;
+	case Float:
+		return typeof(o) == "number";
+	case Int:
+		if(typeof(o) == "number") {
+			return ((o | 0) === o);
+		} else {
+			return false;
+		}
+		break;
+	case String:
+		return typeof(o) == "string";
+	default:
+		if(o != null) {
+			if(typeof(cl) == "function") {
+				if(js_Boot.__downcastCheck(o,cl)) {
+					return true;
+				}
+			} else if(typeof(cl) == "object" && js_Boot.__isNativeObj(cl)) {
+				if(((o) instanceof cl)) {
+					return true;
+				}
+			}
+		} else {
+			return false;
+		}
+		if(cl == Class ? o.__name__ != null : false) {
+			return true;
+		}
+		if(cl == Enum ? o.__ename__ != null : false) {
+			return true;
+		}
+		return false;
+	}
+};
+js_Boot.__downcastCheck = function(o,cl) {
+	if(!((o) instanceof cl)) {
+		if(cl.__isInterface__) {
+			return js_Boot.__interfLoop(js_Boot.getClass(o),cl);
+		} else {
+			return false;
+		}
+	} else {
+		return true;
+	}
+};
+js_Boot.__cast = function(o,t) {
+	if(o == null || js_Boot.__instanceof(o,t)) {
+		return o;
+	} else {
+		throw new js__$Boot_HaxeError("Cannot cast " + Std.string(o) + " to " + Std.string(t));
+	}
+};
+js_Boot.__nativeClassName = function(o) {
+	var name = js_Boot.__toStr.call(o).slice(8,-1);
+	if(name == "Object" || name == "Function" || name == "Math" || name == "JSON") {
+		return null;
+	}
+	return name;
+};
+js_Boot.__isNativeObj = function(o) {
+	return js_Boot.__nativeClassName(o) != null;
+};
+js_Boot.__resolveNativeClass = function(name) {
+	return $global[name];
+};
 function $getIterator(o) { if( o instanceof Array ) return HxOverrides.iter(o); else return o.iterator(); }
 var $_;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $global.$haxeUID++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = m.bind(o); o.hx__closures__[m.__id__] = f; } return f; }
 $global.$haxeUID |= 0;
+String.prototype.__class__ = String;
 String.__name__ = true;
 Array.__name__ = true;
+Date.prototype.__class__ = Date;
 Date.__name__ = "Date";
+var Int = { };
+var Dynamic = { };
+var Float = Number;
+var Bool = Boolean;
+var Class = { };
+var Enum = { };
 var __map_reserved = {};
 Object.defineProperty(js__$Boot_HaxeError.prototype,"message",{ get : function() {
 	return String(this.val);

@@ -59,6 +59,8 @@ typedef SVGObject = {
 	@:optional var _id:Int;
 	var x:Float;
 	var y:Float;
+	@:optional var centerX:Float;
+	@:optional var centerY:Float;
 	var width:Float;
 	var height:Float;
 };

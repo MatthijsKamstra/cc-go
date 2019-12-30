@@ -8,6 +8,7 @@ import cc.lets.easing.IEasing;
 import js.html.svg.Rect;
 import js.html.svg.SVGElement;
 import js.html.svg.Element;
+import js.html.svg.*;
 
 /**
 
@@ -100,14 +101,42 @@ class GoSVG {
 	 */
 	static inline public function svg(element:js.html.svg.SVGElement):SVGObject {
 		var svg:SVGElement = element;
-		var svgViewBox = svg.getAttribute('viewBox');
-		var svgRect:Rect = (svg.viewBox.baseVal);
+		var _id:String = '';
+		var _x:Float = 0;
+		var _y:Float = 0;
+		var _cx:Float = 0;
+		var _cy:Float = 0;
+		var _width:Float = 0;
+		var _height:Float = 0;
+		var tagName = element.tagName;
+		trace(tagName);
+		_id = tagName;
+		switch (tagName) {
+			case 'rect':
+				_x = cast(svg, RectElement).x.baseVal.value;
+				_y = cast(svg, RectElement).y.baseVal.value;
+				_width = cast(svg, RectElement).width.baseVal.value;
+				_height = cast(svg, RectElement).height.baseVal.value;
+				_cx = cast(svg, RectElement).x.baseVal.value + (cast(svg, RectElement).width.baseVal.value / 2);
+				_cy = cast(svg, RectElement).y.baseVal.value + (cast(svg, RectElement).height.baseVal.value / 2);
+		}
+
+		if (element.hasAttribute('viewBox')) {
+			var svgViewBox = element.getAttribute('viewBox');
+			var svgRect:Rect = (element.viewBox.baseVal);
+			_width = svgRect.width;
+			_height = svgRect.height;
+			_x = svgRect.x;
+			_y = svgRect.y;
+		}
 		return {
-			_id: "",
-			x: svgRect.x,
-			y: svgRect.y,
-			width: svgRect.width,
-			height: svgRect.height,
+			_id: _id,
+			x: _x,
+			y: _y,
+			width: _width,
+			height: _height,
+			centerX: _cx,
+			centerY: _cy,
 		};
 	}
 
@@ -790,6 +819,8 @@ typedef SVGObject = {
 	@:optional var _id:String;
 	var x:Float;
 	var y:Float;
+	@:optional var centerX:Float;
+	@:optional var centerY:Float;
 	var width:Float;
 	var height:Float;
 };

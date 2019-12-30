@@ -29,22 +29,26 @@ class Main {
 
 	function init2OnCompletHander() {
 		console.info('onComplete');
-		var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
+		// var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
+		var svgObject = GoSVG.svg(cast document.getElementById('rect-2'));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
+
+		trace(svgObject);
+
 		GoSVG.to(cast document.getElementById('rect-2'), 5)
-			.pos(svgObject.width * Math.random(), svgObject.height * Math.random())
-			.opacity(randomOpacity)
-			.scale(Math.random() * 10)
-			.onUpdate(init2OnUpdateHandler)
-			.rotation(100, 80, 80)
-			.yoyo();
+			.rotation(100, svgObject.centerX, svgObject.centerY)
+			.delay(2)
+			.onComplete(function() {
+				trace('onComplete');
+			});
+
 		// .onComplete(init2OnCompletHander)
-		// .onComplete(function() {
-		// 	trace('onComplete');
-		// })
 		// .onUpdate(function() {
-		// 	trace('onUpdate');
+		// 	trace('onUpdate');// .pos(svgObject.width * Math.random(), svgObject.height * Math.random())
+		// .opacity(randomOpacity)
+		// .scale(Math.random() * 10)// .yoyo()
+		// .onUpdate(init2OnUpdateHandler)
 		// });
 	}
 
