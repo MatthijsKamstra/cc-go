@@ -11,16 +11,13 @@ import js.html.svg.Element;
 import js.html.svg.*;
 
 /**
-
-
-	/**
-	* version
-	* 		2.0.0 - Start with GoSVG/ removing timebased stuff
-	* 		1.1.0 - 3D additions (z-dir)
-	* 		1.0.9 - Haxe 4 update
-	* 		1.0.8 - arc
-	* 		1.0.7 - wiggle
-	* 		1.0.6 - convert to js only
+ * version
+ * 		2.0.0 - Start with GoSVG/ removing timebased stuff
+ * 		1.1.0 - 3D additions (z-dir)
+ * 		1.0.9 - Haxe 4 update
+ * 		1.0.8 - arc
+ * 		1.0.7 - wiggle
+ * 		1.0.6 - convert to js only
  */
 @:expose
 @:native("GoSVG")
@@ -100,6 +97,10 @@ class GoSVG {
 	 * @return SVGObject
 	 */
 	static inline public function svg(element:js.html.svg.SVGElement):SVGObject {
+		if (element == null) {
+			console.warn('Make sure you have an element selected: this is NO element');
+			return null;
+		}
 		var svg:SVGElement = element;
 		var _id:String = '';
 		var _x:Float = 0;
@@ -109,17 +110,65 @@ class GoSVG {
 		var _width:Float = 0;
 		var _height:Float = 0;
 		var tagName = element.tagName;
-		trace(tagName);
 		_id = tagName;
 		switch (tagName) {
 			case 'rect':
-				_x = cast(svg, RectElement).x.baseVal.value;
-				_y = cast(svg, RectElement).y.baseVal.value;
-				_width = cast(svg, RectElement).width.baseVal.value;
-				_height = cast(svg, RectElement).height.baseVal.value;
-				_cx = cast(svg, RectElement).x.baseVal.value + (cast(svg, RectElement).width.baseVal.value / 2);
-				_cy = cast(svg, RectElement).y.baseVal.value + (cast(svg, RectElement).height.baseVal.value / 2);
+				var rect = cast(svg, RectElement);
+				_x = rect.x.baseVal.value;
+				_y = rect.y.baseVal.value;
+				_width = rect.width.baseVal.value;
+				_height = rect.height.baseVal.value;
+				_cx = rect.x.baseVal.value + (rect.width.baseVal.value / 2);
+				_cy = rect.y.baseVal.value + (rect.height.baseVal.value / 2);
+			case 'ellipse':
+				var ellipse = cast(svg, EllipseElement);
+				_x = ellipse.cx.baseVal.value - (ellipse.rx.baseVal.value / 2);
+				_y = ellipse.cy.baseVal.value - (ellipse.ry.baseVal.value / 2);
+				_width = ellipse.rx.baseVal.value;
+				_height = ellipse.ry.baseVal.value;
+				_cx = ellipse.cx.baseVal.value;
+				_cy = ellipse.cy.baseVal.value;
+			case 'circle':
+				var circle = cast(svg, CircleElement);
+				_x = circle.cx.baseVal.value - (circle.r.baseVal.value / 2);
+				_y = circle.cy.baseVal.value - (circle.r.baseVal.value / 2);
+				_width = circle.r.baseVal.value;
+				_height = circle.r.baseVal.value;
+				_cx = circle.cx.baseVal.value;
+				_cy = circle.cy.baseVal.value;
+			case 'line':
+				var circle = cast(svg, LineElement);
+				_x = Math.min(circle.x1.baseVal.value, circle.x2.baseVal.value);
+				_y = Math.min(circle.y1.baseVal.value, circle.y2.baseVal.value);
+				_width = Math.max(circle.x1.baseVal.value, circle.x2.baseVal.value) - Math.min(circle.x1.baseVal.value, circle.x2.baseVal.value);
+				_height = Math.max(circle.y1.baseVal.value, circle.y2.baseVal.value) - Math.min(circle.y1.baseVal.value, circle.y2.baseVal.value);
+				_cx = _x + (_width / 2);
+				_cy = _y + (_height / 2);
+			case 'text':
+				var text = cast(svg, TextElement);
+				// _x = cast text.getAttribute('x'); // this is just to weird!:
+				// _y = cast text.getAttribute('y'); // text.y.baseVal.getItem[0].;
+				_x = text.getBBox().x;
+				_y = text.getBBox().y;
+				_width = text.getBBox().width;
+				_height = text.getBBox().height;
+				_cx = _x + (_width / 2);
+				_cy = _y + (_height / 2);
+			// case 'Polygon':
+			// case 'PolyLine':
+			// case 'Path':
+			default:
+				var graphic = cast(svg, GraphicsElement);
+				trace('case "${_id}": trace("${_id}");');
+				_x = graphic.getBBox().x;
+				_y = graphic.getBBox().y;
+				_width = graphic.getBBox().width;
+				_height = graphic.getBBox().height;
+				_cx = _x + (_width / 2);
+				_cy = _y + (_height / 2);
 		}
+
+		// trace(_id, _x, _y, _width, _height, _cx, _cy);
 
 		if (element.hasAttribute('viewBox')) {
 			var svgViewBox = element.getAttribute('viewBox');
@@ -131,6 +180,7 @@ class GoSVG {
 		}
 		return {
 			_id: _id,
+			el: element,
 			x: _x,
 			y: _y,
 			width: _width,
@@ -817,6 +867,7 @@ typedef SkewY = {
 
 typedef SVGObject = {
 	@:optional var _id:String;
+	var el:SVGElement;
 	var x:Float;
 	var y:Float;
 	@:optional var centerX:Float;

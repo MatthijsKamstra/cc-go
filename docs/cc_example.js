@@ -3,7 +3,7 @@
 var Main = function() {
 	var _gthis = this;
 	window.document.addEventListener("DOMContentLoaded",function(event) {
-		window.console.info("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-30 18:39:36" + " ");
+		window.console.info("" + model_constants_App.NAME + " Dom ready :: build: " + "2019-12-30 23:54:54" + " ");
 		_gthis.init2();
 	});
 };
@@ -16,12 +16,27 @@ Main.prototype = {
 	}
 	,init2OnCompletHander: function() {
 		window.console.info("onComplete");
-		var svgObject = GoSVG.svg(window.document.getElementById("rect-2"));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
-		console.log("src/Main.hx:37:",svgObject);
-		GoSVG.to(window.document.getElementById("rect-2"),5).rotation(100,svgObject.centerX,svgObject.centerY).delay(2).onComplete(function() {
-			console.log("src/Main.hx:43:","onComplete");
+		var _obj = GoSVG.svg(window.document.getElementById("line-2"));
+		GoSVG.to(_obj.el,5).rotation(100,_obj.centerX,_obj.centerY).delay(4).onComplete(function() {
+			console.log("src/Main.hx:74:","onComplete");
+		});
+		var _obj1 = GoSVG.svg(window.document.getElementById("text-3"));
+		GoSVG.to(_obj1.el,5).rotation(180,_obj1.centerX,_obj1.centerY).onComplete(function() {
+			console.log("src/Main.hx:80:","onComplete");
+		});
+		var _obj2 = GoSVG.svg(window.document.getElementById("polygon-2"));
+		GoSVG.to(_obj2.el,5).rotation(180,_obj2.centerX,_obj2.centerY).onComplete(function() {
+			console.log("src/Main.hx:85:","onComplete");
+		});
+		var _obj3 = GoSVG.svg(window.document.getElementById("polyline-2"));
+		GoSVG.to(_obj3.el,5).rotation(180,_obj3.centerX,_obj3.centerY).onComplete(function() {
+			console.log("src/Main.hx:90:","onComplete");
+		});
+		var _obj4 = GoSVG.svg(window.document.getElementById("path-2"));
+		GoSVG.to(_obj4.el,5).rotation(180,_obj4.centerX,_obj4.centerY).onComplete(function() {
+			console.log("src/Main.hx:95:","onComplete");
 		});
 	}
 };

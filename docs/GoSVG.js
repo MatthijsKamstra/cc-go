@@ -89,6 +89,10 @@ GoSVG.test = function(target,duration) {
 	return _go;
 };
 GoSVG.svg = function(element) {
+	if(element == null) {
+		window.console.warn("Make sure you have an element selected: this is NO element");
+		return null;
+	}
 	var svg = element;
 	var _id = "";
 	var _x = 0;
@@ -98,15 +102,62 @@ GoSVG.svg = function(element) {
 	var _width = 0;
 	var _height = 0;
 	var tagName = element.tagName;
-	console.log("src/cc/lets/GoSVG.hx:112:",tagName);
 	_id = tagName;
-	if(tagName == "rect") {
-		_x = (js_Boot.__cast(svg , SVGRectElement)).x.baseVal.value;
-		_y = (js_Boot.__cast(svg , SVGRectElement)).y.baseVal.value;
-		_width = (js_Boot.__cast(svg , SVGRectElement)).width.baseVal.value;
-		_height = (js_Boot.__cast(svg , SVGRectElement)).height.baseVal.value;
-		_cx = (js_Boot.__cast(svg , SVGRectElement)).x.baseVal.value + (js_Boot.__cast(svg , SVGRectElement)).width.baseVal.value / 2;
-		_cy = (js_Boot.__cast(svg , SVGRectElement)).y.baseVal.value + (js_Boot.__cast(svg , SVGRectElement)).height.baseVal.value / 2;
+	switch(tagName) {
+	case "circle":
+		var circle = js_Boot.__cast(svg , SVGCircleElement);
+		_x = circle.cx.baseVal.value - circle.r.baseVal.value / 2;
+		_y = circle.cy.baseVal.value - circle.r.baseVal.value / 2;
+		_width = circle.r.baseVal.value;
+		_height = circle.r.baseVal.value;
+		_cx = circle.cx.baseVal.value;
+		_cy = circle.cy.baseVal.value;
+		break;
+	case "ellipse":
+		var ellipse = js_Boot.__cast(svg , SVGEllipseElement);
+		_x = ellipse.cx.baseVal.value - ellipse.rx.baseVal.value / 2;
+		_y = ellipse.cy.baseVal.value - ellipse.ry.baseVal.value / 2;
+		_width = ellipse.rx.baseVal.value;
+		_height = ellipse.ry.baseVal.value;
+		_cx = ellipse.cx.baseVal.value;
+		_cy = ellipse.cy.baseVal.value;
+		break;
+	case "line":
+		var circle1 = js_Boot.__cast(svg , SVGLineElement);
+		_x = Math.min(circle1.x1.baseVal.value,circle1.x2.baseVal.value);
+		_y = Math.min(circle1.y1.baseVal.value,circle1.y2.baseVal.value);
+		_width = Math.max(circle1.x1.baseVal.value,circle1.x2.baseVal.value) - Math.min(circle1.x1.baseVal.value,circle1.x2.baseVal.value);
+		_height = Math.max(circle1.y1.baseVal.value,circle1.y2.baseVal.value) - Math.min(circle1.y1.baseVal.value,circle1.y2.baseVal.value);
+		_cx = _x + _width / 2;
+		_cy = _y + _height / 2;
+		break;
+	case "rect":
+		var rect = js_Boot.__cast(svg , SVGRectElement);
+		_x = rect.x.baseVal.value;
+		_y = rect.y.baseVal.value;
+		_width = rect.width.baseVal.value;
+		_height = rect.height.baseVal.value;
+		_cx = rect.x.baseVal.value + rect.width.baseVal.value / 2;
+		_cy = rect.y.baseVal.value + rect.height.baseVal.value / 2;
+		break;
+	case "text":
+		var text = js_Boot.__cast(svg , SVGTextElement);
+		_x = text.getBBox().x;
+		_y = text.getBBox().y;
+		_width = text.getBBox().width;
+		_height = text.getBBox().height;
+		_cx = _x + _width / 2;
+		_cy = _y + _height / 2;
+		break;
+	default:
+		var graphic = js_Boot.__cast(svg , SVGGraphicsElement);
+		console.log("src/cc/lets/GoSVG.hx:162:","case \"" + _id + "\": trace(\"" + _id + "\");");
+		_x = graphic.getBBox().x;
+		_y = graphic.getBBox().y;
+		_width = graphic.getBBox().width;
+		_height = graphic.getBBox().height;
+		_cx = _x + _width / 2;
+		_cy = _y + _height / 2;
 	}
 	if(element.hasAttribute("viewBox")) {
 		var svgViewBox = element.getAttribute("viewBox");
@@ -116,7 +167,7 @@ GoSVG.svg = function(element) {
 		_x = svgRect.x;
 		_y = svgRect.y;
 	}
-	return { _id : _id, x : _x, y : _y, width : _width, height : _height, centerX : _cx, centerY : _cy};
+	return { _id : _id, el : element, x : _x, y : _y, width : _width, height : _height, centerX : _cx, centerY : _cy};
 };
 GoSVG.to = function(target,duration) {
 	var _go = new GoSVG(target,duration);

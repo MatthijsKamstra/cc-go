@@ -30,18 +30,17 @@ class Main {
 	function init2OnCompletHander() {
 		console.info('onComplete');
 		// var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
-		var svgObject = GoSVG.svg(cast document.getElementById('rect-2'));
 		var randomOpacity = Math.random();
 		var randomRotation = Math.random() * 360;
 
-		trace(svgObject);
-
-		GoSVG.to(cast document.getElementById('rect-2'), 5)
-			.rotation(100, svgObject.centerX, svgObject.centerY)
-			.delay(2)
-			.onComplete(function() {
-				trace('onComplete');
-			});
+		// var _obj = GoSVG.svg(cast document.getElementById('rect-2'));
+		// trace(_obj);
+		// GoSVG.to(_obj.el, 5)
+		// 	.rotation(100, _obj.centerX, _obj.centerY)
+		// 	.delay(1)
+		// 	.onComplete(function() {
+		// 		trace('onComplete');
+		// 	});
 
 		// .onComplete(init2OnCompletHander)
 		// .onUpdate(function() {
@@ -50,6 +49,51 @@ class Main {
 		// .scale(Math.random() * 10)// .yoyo()
 		// .onUpdate(init2OnUpdateHandler)
 		// });
+
+		// var _obj = GoSVG.svg(cast document.getElementById('ellipse-2'));
+		// GoSVG.to(_obj.el, 5)
+		// 	.rotation(100, _obj.centerX, _obj.centerY)
+		// 	.delay(2)
+		// 	.onComplete(function() {
+		// 		trace('onComplete');
+		// 	});
+
+		// var _obj = GoSVG.svg(cast document.getElementById('circle-2'));
+		// GoSVG.to(_obj.el, 5)
+		// 	.rotation(100, _obj.centerX, _obj.centerY)
+		// 	.delay(3)
+		// 	.onComplete(function() {
+		// 		trace('onComplete');
+		// 	});
+
+		var _obj = GoSVG.svg(cast document.getElementById('line-2'));
+		GoSVG.to(_obj.el, 5)
+			.rotation(100, _obj.centerX, _obj.centerY)
+			.delay(4)
+			.onComplete(function() {
+				trace('onComplete');
+			});
+
+		var _obj = GoSVG.svg(cast document.getElementById('text-3'));
+		// trace(_obj);
+		GoSVG.to(_obj.el, 5).rotation(180, _obj.centerX, _obj.centerY).onComplete(function() {
+			trace('onComplete');
+		});
+
+		var _obj = GoSVG.svg(cast document.getElementById('polygon-2'));
+		GoSVG.to(_obj.el, 5).rotation(180, _obj.centerX, _obj.centerY).onComplete(function() {
+			trace('onComplete');
+		});
+
+		var _obj = GoSVG.svg(cast document.getElementById('polyline-2'));
+		GoSVG.to(_obj.el, 5).rotation(180, _obj.centerX, _obj.centerY).onComplete(function() {
+			trace('onComplete');
+		});
+
+		var _obj = GoSVG.svg(cast document.getElementById('path-2'));
+		GoSVG.to(_obj.el, 5).rotation(180, _obj.centerX, _obj.centerY).onComplete(function() {
+			trace('onComplete');
+		});
 	}
 
 	function init2OnUpdateHandler(?time) {

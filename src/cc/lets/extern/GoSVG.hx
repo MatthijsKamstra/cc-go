@@ -57,6 +57,7 @@ extern class GoSVG {
 
 typedef SVGObject = {
 	@:optional var _id:Int;
+	var el:SVGElement;
 	var x:Float;
 	var y:Float;
 	@:optional var centerX:Float;
