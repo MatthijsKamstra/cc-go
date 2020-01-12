@@ -19,15 +19,23 @@ class Main {
 			console.info('${App.NAME} Dom ready :: build: ${App.getBuildDate()} ');
 			// init0();
 			// init1();
-			init2();
+			// initRotationTest();
+			initMove();
 		});
 	}
 
-	function init2() {
-		init2OnCompletHander();
+	function initMove() {
+		var randomY = (Math.random() * 200) - 10;
+		var _obj = GoSVG.svg(cast document.getElementById('rect-2'));
+		GoSVG.to(_obj.el, 5).x(randomY) //
+			// .delay(1)
+			.onComplete(function() {
+				trace('onComplete Rect');
+				initMove();
+			});
 	}
 
-	function init2OnCompletHander() {
+	function initRotationTest() {
 		console.info('onComplete');
 		// var svgObject = GoSVG.svg(cast document.getElementById('simple-example'));
 		var randomOpacity = Math.random();
@@ -42,7 +50,7 @@ class Main {
 		// 		trace('onComplete');
 		// 	});
 
-		// .onComplete(init2OnCompletHander)
+		// .onComplete(initRotationTest)
 		// .onUpdate(function() {
 		// 	trace('onUpdate');// .pos(svgObject.width * Math.random(), svgObject.height * Math.random())
 		// .opacity(randomOpacity)

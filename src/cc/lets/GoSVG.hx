@@ -730,11 +730,11 @@ class GoSVG {
 		var str = '';
 		if (this._transform.translate != null) {
 			if (this._transform.translate.y == null) {
-				str += 'translate(${this._transform.translate.x} ';
+				str += 'translate(${this._transform.translate.x}) ';
 			} else if (this._transform.translate.x == null) {
-				str += 'translate(0 ${this._transform.translate.y} ';
+				str += 'translate(0 ${this._transform.translate.y}) ';
 			} else {
-				str += 'translate(${this._transform.translate.x}, ${this._transform.translate.x}) ';
+				str += 'translate(${this._transform.translate.x}, ${this._transform.translate.y}) ';
 			}
 		}
 		if (this._transform.rotate != null) {
